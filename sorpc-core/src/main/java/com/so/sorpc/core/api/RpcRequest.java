@@ -1,7 +1,5 @@
 package com.so.sorpc.core.api;
 
-import java.lang.reflect.Method;
-
 import lombok.Data;
 
 /**
@@ -10,7 +8,7 @@ import lombok.Data;
  */
 @Data
 public class RpcRequest {
-    String service;
-    String method;
-    Object[] args;
+    private String service; //接口: com.so.sorpc.demo.api.UserService
+    private String method;  //方法: getById
+    private Object[] args;  //参数: 100
 }

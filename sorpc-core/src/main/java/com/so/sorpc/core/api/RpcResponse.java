@@ -12,6 +12,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class RpcResponse<T> {
-    Boolean status;
+    boolean status;
     T data;
+    Exception ex;
 }

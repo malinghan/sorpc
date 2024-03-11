@@ -11,6 +11,7 @@ import org.springframework.context.ApplicationContextAware;
 import com.so.sorpc.core.annotation.SoRpcProvider;
 import com.so.sorpc.core.api.RpcRequest;
 import com.so.sorpc.core.api.RpcResponse;
+import com.so.sorpc.core.utils.MethodUtils;
 
 import jakarta.annotation.PostConstruct;
 import lombok.Data;
@@ -49,6 +50,9 @@ public class ProviderBootStrap implements ApplicationContextAware {
     }
 
     public RpcResponse invoke(RpcRequest rpcRequest) {
+        if(MethodUtils.checkLocalMethod(rpcRequest.getMethod())) {
+            return null;
+        }
         Object bean = skeleton.get(rpcRequest.getService());
         if (bean == null) {
             System.out.println("未通过request中service定义找到匹配的bean, service:" + rpcRequest.getService());
@@ -62,14 +66,19 @@ public class ProviderBootStrap implements ApplicationContextAware {
         }
         System.out.println("通过request中的method信息寻找到的方法为:" + method.getName());
         Object result = null;
+        RpcResponse response = new RpcResponse();
         try {
             result = method.invoke(bean, rpcRequest.getArgs());
+            response.setData(result);
+            response.setStatus(true);
         } catch (IllegalAccessException e) {
+            response.setEx(new RuntimeException(e.getMessage()));
             e.printStackTrace();
         } catch (InvocationTargetException e) {
+            response.setEx(new RuntimeException(e.getTargetException().getMessage()));
             e.printStackTrace();
         }
-        return new RpcResponse(true, result);
+        return response;
     }
 
 //    Method findMethod(Class<?> c, String methodName) {
