@@ -4,8 +4,20 @@ Content-Type: application/json
 
 {
   "service": "com.so.sorpc.demo.api.UserService",
-  "method": "findById",
+  "methodSign": "findById@1_java.lang.Integer",
   "args": [100]
+}
+
+
+
+### 获取用户信息1
+POST http://localhost:8080/
+Content-Type: application/json
+
+{
+"service": "com.so.sorpc.demo.api.UserService",
+"methodSign": "findById@1_java.lang.String",
+"args": ["hello"]
 }
 
 
@@ -15,16 +27,6 @@ Content-Type: application/json
 
 {
   "service": "com.so.sorpc.demo.api.OrderService",
-  "method": "findById",
+  "methodSign": "findById@1_java.lang.Long",
   "args": [100]
-}
-
-### mock
-POST http://localhost:8080/
-Content-Type: application/json
-
-{
-  "service": "com.so.sorpc.demo.api.UserService",
-  "method": "hashCode",
-  "args": []
 }

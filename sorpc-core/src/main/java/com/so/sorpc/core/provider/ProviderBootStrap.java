@@ -2,16 +2,23 @@ package com.so.sorpc.core.provider;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 
+import com.alibaba.fastjson.JSONObject;
 import com.so.sorpc.core.annotation.SoRpcProvider;
 import com.so.sorpc.core.api.RpcRequest;
 import com.so.sorpc.core.api.RpcResponse;
+import com.so.sorpc.core.meta.ProviderMeta;
 import com.so.sorpc.core.utils.MethodUtils;
+import com.so.sorpc.core.utils.TypeUtils;
 
 import jakarta.annotation.PostConstruct;
 import lombok.Data;
@@ -25,7 +32,7 @@ public class ProviderBootStrap implements ApplicationContextAware {
 
     ApplicationContext applicationContext;
 
-    private Map<String, Object> skeleton = new HashMap<>();   //获取到的服务接口存根
+    private MultiValueMap<String, ProviderMeta> skeleton = new LinkedMultiValueMap<>();   //获取到的服务接口存根
 
 
     @PostConstruct
@@ -46,29 +53,53 @@ public class ProviderBootStrap implements ApplicationContextAware {
         //类型信息
         Class<?> c = o.getClass().getInterfaces()[0];
         System.out.println("获取到的接口信息为:" + c.getCanonicalName());
-        skeleton.put(c.getCanonicalName(), o);
+        Method[] methods = c.getMethods();
+        List<ProviderMeta> providerMetas = new ArrayList<>();
+        for (Method method : methods) {
+            if (MethodUtils.checkLocalMethod(method.getName())) {
+                continue;
+            }
+            ProviderMeta providerMeta = createProviderMeta(c, o, method);
+            providerMetas.add(providerMeta);
+        }
+        skeleton.put(c.getCanonicalName(), providerMetas);
     }
 
+    private  ProviderMeta createProviderMeta(Class<?> c, Object x, Method method) {
+        ProviderMeta meta = new ProviderMeta();
+        meta.setMethod(method);
+        meta.setServiceImpl(x);
+        meta.setMethodSign(MethodUtils.methodSign(method));
+        return meta;
+    }
+
+
+
     public RpcResponse invoke(RpcRequest rpcRequest) {
-        if(MethodUtils.checkLocalMethod(rpcRequest.getMethod())) {
-            return null;
+        List<ProviderMeta> providerMetas = skeleton.get(rpcRequest.getService());
+        Object result = null;
+        ProviderMeta meta = null;
+        for (ProviderMeta providerMeta : providerMetas) {
+              if(providerMeta.getMethodSign().equals(rpcRequest.getMethodSign())) {
+                    meta = providerMeta;
+                    break;
+              }
         }
-        Object bean = skeleton.get(rpcRequest.getService());
-        if (bean == null) {
-            System.out.println("未通过request中service定义找到匹配的bean, service:" + rpcRequest.getService());
+        //TODO 空指针处理
+        if (meta == null) {
+            System.out.println("未通过request中service定义找到匹配的meta, service:" + rpcRequest.getService());
+//            return  null;
         }
+        Object bean =  meta.getServiceImpl();
         //查看是否通过反射拿到了对象  java.lang.Class
         System.out.println("服务调用方获取到的接口信息为: "+ bean.getClass().getCanonicalName());
-
-        Method method = findMethod(bean.getClass(), rpcRequest.getMethod());
-        if (method == null) {
-            System.out.println("通过request中的method信息寻找到的方法为: null");
-        }
-        System.out.println("通过request中的method信息寻找到的方法为:" + method.getName());
-        Object result = null;
+        Method method = meta.getMethod();
         RpcResponse response = new RpcResponse();
         try {
-            result = method.invoke(bean, rpcRequest.getArgs());
+            //provider侧反序列化处理
+            Object[] args = processArgs(rpcRequest.getArgs(), method.getParameterTypes());
+            result = method.invoke(bean, args);
+            System.out.println("服务调用方获取到的输出: "+ JSONObject.toJSONString(result));
             response.setData(result);
             response.setStatus(true);
         } catch (IllegalAccessException e) {
@@ -81,23 +112,19 @@ public class ProviderBootStrap implements ApplicationContextAware {
         return response;
     }
 
-//    Method findMethod(Class<?> c, String methodName) {
-//        Method method = null;
-//        try {
-//            method = c.getDeclaredMethod(methodName);
-//        } catch (NoSuchMethodException e) {
-//            e.printStackTrace();
-//        }
-//        return method;
-//    }
-
-
-    private Method findMethod(Class<?> aClass, String methodName) {
-        for (Method method : aClass.getMethods()) {
-            if(method.getName().equals(methodName)) {  // 有多个重名方法，
-                return method;
-            }
+    /**
+     * 处理返回
+     * @param args
+     * @param parameterTypes
+     * @return
+     */
+    private Object[] processArgs(Object[] args, Class<?>[] parameterTypes) {
+        if (args == null || parameterTypes == null || args.length == 0 || parameterTypes.length == 0) { return args;}
+        int length = args.length;
+        Object[] res = new Object[length];
+        for (int i = 0; i < length; i++) {
+            res[i] = TypeUtils.cast(args[i], parameterTypes[i]);
         }
-        return null;
+        return res;
     }
 }

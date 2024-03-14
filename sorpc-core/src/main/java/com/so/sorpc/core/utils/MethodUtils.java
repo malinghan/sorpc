@@ -1,5 +1,8 @@
 package com.so.sorpc.core.utils;
 
+import java.lang.reflect.Method;
+import java.util.Arrays;
+
 /**
  * @author someecho <linghan.ma@gmail.com>
  * Created on 2024-03-11
@@ -17,5 +20,20 @@ public class MethodUtils {
             return true;
         }
         return false;
+    }
+
+    public static String methodSign(Method method) {
+        StringBuilder methodSign = new StringBuilder(method.getName());
+        methodSign.append("@")
+                .append(method.getParameterCount());
+        Arrays.stream(method.getParameterTypes()).forEach(
+                c -> methodSign.append("_").append(c.getCanonicalName())
+        );
+        return methodSign.toString();
+    }
+
+    public static void main(String[] args) {
+        Arrays.stream(MethodUtils.class.getMethods()).forEach(
+                c -> {System.out.println(MethodUtils.methodSign(c)); });
     }
 }

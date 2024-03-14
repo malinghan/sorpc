@@ -2,15 +2,25 @@ package com.so.sorpc.core.consumer;
 
 
 import java.io.IOException;
+import java.lang.reflect.Array;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.so.sorpc.core.api.RpcRequest;
 import com.so.sorpc.core.api.RpcResponse;
 import com.so.sorpc.core.utils.MethodUtils;
+import com.so.sorpc.core.utils.TypeUtils;
 
 import okhttp3.ConnectionPool;
 import okhttp3.MediaType;
@@ -45,9 +55,8 @@ public class SoInvocationHandler implements InvocationHandler {
             return null;
         }
         RpcRequest rpcRequest = new RpcRequest();
-        //???
         rpcRequest.setService(service.getCanonicalName());
-        rpcRequest.setMethod(method.getName());
+        rpcRequest.setMethodSign(MethodUtils.methodSign(method));
         rpcRequest.setArgs(args);
 
         RpcResponse rpcResponse =  post(rpcRequest);
@@ -56,16 +65,13 @@ public class SoInvocationHandler implements InvocationHandler {
         if (rpcResponse.isStatus()) {
             //反序列化为object
             Object data = rpcResponse.getData();
-            //问题2. 如果是基本类型直接返回，如果是Object,反解析为JavaObject
-            if(data instanceof JSONObject jsonResult) {
-                return jsonResult.toJavaObject(method.getReturnType());
-            } else {
-                return data;
-            }
+            //这里的类型转换很复杂
+            return TypeUtils.cast(data, method.getReturnType());
+//            return TypeUtils.castByMethod(data, method);
         } else {
-            Exception ex = rpcResponse.getEx();
-            //ex.printStackTrace();
-            throw new RuntimeException(ex);
+                Exception ex = rpcResponse.getEx();
+                //ex.printStackTrace();
+                throw new RuntimeException(ex);
         }
     }
 

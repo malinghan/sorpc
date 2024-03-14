@@ -39,12 +39,12 @@ public class ConsumerBootStrap implements ApplicationContextAware {
                 try {
                     Class<?> service = field.getType();
                     String serviceName = service.getCanonicalName();
+                    //这就是stub.put操作
                     Object consumer = stub.get(serviceName);
                     if (consumer == null) {
                         consumer = creatConsumer(service);
-//                        stub.put(serviceName, consumer);
+                        //stub.put(serviceName, consumer);
                     }
-                    //这是在干啥?
                     field.setAccessible(true);
                     field.set(bean, consumer);
                 } catch (Exception e) {
@@ -71,21 +71,6 @@ public class ConsumerBootStrap implements ApplicationContextAware {
         }
         return annotatedFields;
     }
-
-//    private List<Field> getAnnotatedFields(Class<?> beanClass) {
-//        Field[] fields = beanClass.getDeclaredFields();
-//        List<Field> annotatedFields = new ArrayList<>();
-//        for (Field field : fields) {
-//            Annotation[] annotations = field.getDeclaredAnnotations();
-//            for (Annotation annotation : annotations) {
-//                if (annotation instanceof SoRpcConsumer) {
-//                    annotatedFields.add(field);
-//                    break;
-//                }
-//            }
-//        }
-//        return annotatedFields;
-//    }
 
     /**
      * 代理调用请求
