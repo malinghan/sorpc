@@ -6,13 +6,9 @@
         <groupId>com.so</groupId>
         <artifactId>sorpc</artifactId>
         <version>0.0.1-SNAPSHOT</version>
-<!--        <relativePath/> &lt;!&ndash; lookup parent from repository &ndash;&gt;-->
     </parent>
-    <groupId>com.so</groupId>
     <artifactId>sorpc-demo-provider</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>sorpc-demo-provider</name>
-    <description>sorpc-demo-provider</description>
     <properties>
         <java.version>17</java.version>
     </properties>

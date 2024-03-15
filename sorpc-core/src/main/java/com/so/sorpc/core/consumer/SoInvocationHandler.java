@@ -51,7 +51,10 @@ public class SoInvocationHandler implements InvocationHandler {
 
     @Override
     public Object invoke(Object proxy, Method method, Object[] args)  {
-        if (MethodUtils.checkLocalMethod(method.getName())) {
+//        if (MethodUtils.checkLocalMethod(method.getName())) {
+//            return null;
+//        }
+        if (MethodUtils.checkIfObjectMethod(method)) {
             return null;
         }
         RpcRequest rpcRequest = new RpcRequest();

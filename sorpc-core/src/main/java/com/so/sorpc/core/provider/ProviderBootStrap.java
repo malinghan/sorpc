@@ -56,7 +56,10 @@ public class ProviderBootStrap implements ApplicationContextAware {
         Method[] methods = c.getMethods();
         List<ProviderMeta> providerMetas = new ArrayList<>();
         for (Method method : methods) {
-            if (MethodUtils.checkLocalMethod(method.getName())) {
+//            if (MethodUtils.checkLocalMethod(method.getName())) {
+//                continue;
+//            }
+            if (MethodUtils.checkIfObjectMethod(method)) {
                 continue;
             }
             ProviderMeta providerMeta = createProviderMeta(c, o, method);

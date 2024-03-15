@@ -1,6 +1,7 @@
 package com.so.sorpc.core.utils;
 
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.util.Arrays;
 
 /**
@@ -20,6 +21,11 @@ public class MethodUtils {
             return true;
         }
         return false;
+    }
+
+    public static boolean checkIfObjectMethod(final Method method) {
+        return  Modifier.isPublic(method.getModifiers())
+                && method.getDeclaringClass().equals(Object.class);
     }
 
     public static String methodSign(Method method) {

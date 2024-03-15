@@ -1,4 +1,4 @@
-package com.example.sorpc.demo.provider;
+package com.so.sorpc.demo.provider;
 
 
 import java.util.ArrayList;

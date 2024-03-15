@@ -1,4 +1,4 @@
-package com.example.sorpc.demo.provider;
+package com.so.sorpc.demo.provider;
 
 import org.springframework.stereotype.Component;
 
