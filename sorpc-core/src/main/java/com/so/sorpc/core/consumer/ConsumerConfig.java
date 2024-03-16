@@ -1,10 +1,18 @@
 package com.so.sorpc.core.consumer;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
+
+import com.so.sorpc.core.api.LoadBalancer;
+import com.so.sorpc.core.api.RegistryCenter;
+import com.so.sorpc.core.api.Router;
+import com.so.sorpc.core.cluster.RoundRobinLoadBalancer;
 
 /**
  * @author someecho <linghan.ma@gmail.com>
@@ -12,6 +20,10 @@ import org.springframework.core.annotation.Order;
  */
 @Configuration
 public class ConsumerConfig {
+
+    @Value("${sorpc.providers}")
+    String servers;
+
     @Bean
     ConsumerBootStrap getConsumerBootStrap() {
         return new ConsumerBootStrap();
@@ -25,5 +37,21 @@ public class ConsumerConfig {
             consumerBootStrap.start();
             System.out.println("consumerBootStrap end...");
         };
+    }
+
+    @Bean
+    public LoadBalancer loadBalancer() {
+        //return LoadBalancer.Default;
+        return new RoundRobinLoadBalancer();
+    }
+
+    @Bean
+    public Router router() {
+        return Router.Default;
+    }
+
+    @Bean(initMethod = "start", destroyMethod = "stop")
+    public RegistryCenter consumerRegistryCenter() {
+        return new RegistryCenter.StaticRegistryCenter(List.of(servers.split(",")));
     }
 }

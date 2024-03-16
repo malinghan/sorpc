@@ -2,21 +2,13 @@ package com.so.sorpc.core.consumer;
 
 
 import java.io.IOException;
-import java.lang.reflect.Array;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONObject;
+import com.so.sorpc.core.api.RpcContext;
 import com.so.sorpc.core.api.RpcRequest;
 import com.so.sorpc.core.api.RpcResponse;
 import com.so.sorpc.core.utils.MethodUtils;
@@ -37,6 +29,8 @@ public class SoInvocationHandler implements InvocationHandler {
     final static MediaType JSONTYPE = MediaType.get("application/json; charset=utf-8");
 
     Class<?> service;
+    RpcContext rpcContext;
+    List<String> providers;
 
     OkHttpClient client = new OkHttpClient.Builder()
             .connectionPool(new ConnectionPool(16, 60, TimeUnit.SECONDS))
@@ -45,8 +39,10 @@ public class SoInvocationHandler implements InvocationHandler {
             .connectTimeout(1, TimeUnit.SECONDS)
             .build();
 
-    public SoInvocationHandler(Class<?> clazz) {
-        this.service = clazz;
+    public SoInvocationHandler(Class<?> service, RpcContext rpcContext, List<String> providers) {
+        this.service = service;
+        this.rpcContext = rpcContext;
+        this.providers = providers;
     }
 
     @Override
@@ -62,7 +58,11 @@ public class SoInvocationHandler implements InvocationHandler {
         rpcRequest.setMethodSign(MethodUtils.methodSign(method));
         rpcRequest.setArgs(args);
 
-        RpcResponse rpcResponse =  post(rpcRequest);
+        List<String> urls = rpcContext.getRouter().choose(providers);
+        String url = (String) rpcContext.getLoadBalancer().choose(urls);
+
+
+        RpcResponse rpcResponse =  post(rpcRequest, url);
 
         //判断状态
         if (rpcResponse.isStatus()) {
@@ -78,11 +78,11 @@ public class SoInvocationHandler implements InvocationHandler {
         }
     }
 
-    private RpcResponse post(RpcRequest rpcRequest) {
+    private RpcResponse post(RpcRequest rpcRequest, String url) {
         String reqJson = JSON.toJSONString(rpcRequest);
         System.out.println(" ===> reqJson = " + reqJson);
         Request request = new Request.Builder()
-                .url("http://localhost:8080/")
+                .url(url)
                 .post(RequestBody.create(reqJson, JSONTYPE))
                 .build();
         try {

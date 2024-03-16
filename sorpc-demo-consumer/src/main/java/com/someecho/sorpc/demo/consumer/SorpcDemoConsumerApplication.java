@@ -11,6 +11,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.alibaba.fastjson.JSONObject;
@@ -29,6 +30,11 @@ public class SorpcDemoConsumerApplication {
 
     @Autowired
     ApplicationContext context;
+
+    @RequestMapping("/")
+    public User findBy(Integer id) {
+        return userService.findById(id);
+    }
 
     public static void main(String[] args) {
         SpringApplication.run(SorpcDemoConsumerApplication.class, args);

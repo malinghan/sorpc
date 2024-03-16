@@ -8,7 +8,8 @@ Content-Type: application/json
   "args": [100]
 }
 
-
+### 获取用户信息1
+GET http://localhost:8088/?id=1
 
 ### 获取用户信息1
 POST http://localhost:8080/

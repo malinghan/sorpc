@@ -6,6 +6,9 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
 import com.so.sorpc.core.annotation.SoRpcProvider;
@@ -19,9 +22,19 @@ import com.so.sorpc.demo.api.UserService;
 @Component
 @SoRpcProvider
 public class UserServiceImpl implements UserService {
+
+//    @Value("server.port")
+//    int server;
+
+    @Autowired
+    Environment environment;
+
     @Override
     public User findById(Integer id) {
-        return new User(id, "so" + System.currentTimeMillis());
+        return new User(id, "so-"
+                + environment.getProperty("server.port")
+                + "-"+
+                + System.currentTimeMillis());
     }
 
     @Override
