@@ -28,6 +28,7 @@ public class SorpcDemoProviderApplication {
     ProviderBootStrap providerBootStrap;
 
 
+
     @RequestMapping("/")
     RpcResponse invoke(@RequestBody  RpcRequest request) {
        return providerBootStrap.invoke(request);
