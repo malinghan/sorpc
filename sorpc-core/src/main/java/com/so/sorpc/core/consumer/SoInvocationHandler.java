@@ -61,7 +61,7 @@ public class SoInvocationHandler implements InvocationHandler {
         List<String> urls = rpcContext.getRouter().choose(providers);
         String url = (String) rpcContext.getLoadBalancer().choose(urls);
 
-
+        System.out.println("post request url:" + url);
         RpcResponse rpcResponse =  post(rpcRequest, url);
 
         //判断状态

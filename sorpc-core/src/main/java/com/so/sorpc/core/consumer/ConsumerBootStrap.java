@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
@@ -98,8 +99,27 @@ public class ConsumerBootStrap implements ApplicationContextAware, EnvironmentAw
 //    }
 
     private Object creatConsumerFromRc(Class<?> service,RpcContext rpcContext, RegistryCenter registryCenter) {
-            List<String> providers = registryCenter.fetchAll(service.getCanonicalName());
+             String serviceName = service.getCanonicalName();
+            List<String> providers = mapUrls(registryCenter.fetchAll(serviceName));
+            System.out.println(" ===> map to providers: ");
+            providers.forEach(System.out::println);
+            //TODO 这里简化了subscribe处理, 将providers全部刷新了一下
+            registryCenter.subscribe(serviceName, event -> {
+                    providers.clear();
+                    providers.addAll(mapUrls(event.getData()));
+             });
            return Proxy.newProxyInstance(service.getClassLoader(),
            new Class[]{service}, new SoInvocationHandler(service, rpcContext, providers));
+    }
+
+    /**
+     * convert zkNodes to urls
+     * TODO 优化成可配置
+     * @param nodes
+     * @return
+     */
+    private List<String> mapUrls(List<String> nodes) {
+        return nodes.stream()
+                .map(x -> "http://" + x.replace('_', ':')).collect(Collectors.toList());
     }
 }

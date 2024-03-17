@@ -2,6 +2,8 @@ package com.so.sorpc.core.api;
 
 import java.util.List;
 
+import com.so.sorpc.core.registry.ChangedListener;
+
 /**
  * @author someecho <linghan.ma@gmail.com>
  * Created on 2024-03-17
@@ -13,7 +15,10 @@ public interface RegistryCenter {
 
     //provider
     void register(String service, String instance);
+
     void unregister(String service, String instance);
+
+    void subscribe(String service, ChangedListener listener);
 
     List<String> fetchAll(String service);
 
@@ -42,6 +47,11 @@ public interface RegistryCenter {
 
         @Override
         public void unregister(String service, String instance) {
+
+        }
+
+        @Override
+        public void subscribe(String service, ChangedListener listener) {
 
         }
 

@@ -13,6 +13,7 @@ import com.so.sorpc.core.api.LoadBalancer;
 import com.so.sorpc.core.api.RegistryCenter;
 import com.so.sorpc.core.api.Router;
 import com.so.sorpc.core.cluster.RoundRobinLoadBalancer;
+import com.so.sorpc.core.registry.ZkRegistryCenter;
 
 /**
  * @author someecho <linghan.ma@gmail.com>
@@ -52,6 +53,7 @@ public class ConsumerConfig {
 
     @Bean(initMethod = "start", destroyMethod = "stop")
     public RegistryCenter consumerRegistryCenter() {
-        return new RegistryCenter.StaticRegistryCenter(List.of(servers.split(",")));
+        return new ZkRegistryCenter();
+       // return new RegistryCenter.StaticRegistryCenter(List.of(servers.split(",")));
     }
 }

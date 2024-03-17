@@ -2,11 +2,13 @@ package com.so.sorpc.core.provider;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.util.LinkedMultiValueMap;
@@ -14,6 +16,7 @@ import org.springframework.util.MultiValueMap;
 
 import com.alibaba.fastjson.JSONObject;
 import com.so.sorpc.core.annotation.SoRpcProvider;
+import com.so.sorpc.core.api.RegistryCenter;
 import com.so.sorpc.core.api.RpcRequest;
 import com.so.sorpc.core.api.RpcResponse;
 import com.so.sorpc.core.meta.ProviderMeta;
@@ -21,7 +24,9 @@ import com.so.sorpc.core.utils.MethodUtils;
 import com.so.sorpc.core.utils.TypeUtils;
 
 import jakarta.annotation.PostConstruct;
+import jakarta.annotation.PreDestroy;
 import lombok.Data;
+import lombok.SneakyThrows;
 
 /**
  * @author someecho <linghan.ma@gmail.com>
@@ -34,6 +39,11 @@ public class ProviderBootStrap implements ApplicationContextAware {
 
     private MultiValueMap<String, ProviderMeta> skeleton = new LinkedMultiValueMap<>();   //获取到的服务接口存根
 
+    private String instance;
+
+    @Value("${server.port}")
+    private int port;
+
 
     @PostConstruct
     public void buildProviders() {
@@ -42,7 +52,29 @@ public class ProviderBootStrap implements ApplicationContextAware {
         System.out.println("输出通过注解获取到的providers信息");
         providers.forEach((x,y) -> System.out.println("获取到的服务实现为: " + x));
         //把获取到的服务实现,放到skeleton中
-        providers.values().forEach(x -> genInterface(x));
+        providers.values().forEach(this::genInterface);
+    }
+
+    @SneakyThrows
+    public void start() {
+        String ip = InetAddress.getLocalHost().getHostAddress();
+        instance = ip + "_" + port;
+        skeleton.keySet().forEach(this::registerService);
+    }
+
+    public void registerService(String service) {
+        RegistryCenter rc = applicationContext.getBean(RegistryCenter.class);
+        rc.register(service, instance);
+    }
+
+    @PreDestroy
+    public void stop() {
+        skeleton.keySet().forEach(this::unregisterService);
+    }
+
+    public void unregisterService(String service) {
+        RegistryCenter rc = applicationContext.getBean(RegistryCenter.class);
+        rc.unregister(service, instance);
     }
 
     /**
