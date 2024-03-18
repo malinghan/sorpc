@@ -5,7 +5,8 @@ import java.util.List;
 import org.apache.curator.RetryPolicy;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;
-import org.apache.curator.framework.recipes.cache.TreeCache;
+import org.apache.curator.framework.recipes.cache.CuratorCache;
+import org.apache.curator.framework.recipes.cache.CuratorCacheListener;
 import org.apache.curator.retry.ExponentialBackoffRetry;
 import org.apache.zookeeper.CreateMode;
 
@@ -77,19 +78,35 @@ public class ZkRegistryCenter implements RegistryCenter {
         }
     }
 
+//    @SneakyThrows
+//    @Override
+//    public void subscribe(String service, ChangedListener listener) {
+//        final TreeCache cache =TreeCache.newBuilder(client, "/"+service)
+//                .setCacheData(true) //Sets whether or not to cache byte data per node; default true.
+//                .setMaxDepth(2) //获取depth
+//                .build();
+//        cache.getListenable().addListener((curator, event) -> {
+//            // 有任何节点变动这里会执行
+//            System.out.println("zk subscribe event: " + event);
+//            List<String> nodes = fetchAll(service);
+//            listener.fire(new Event(nodes));
+//        });
+//        cache.start();
+//    }
+
     @SneakyThrows
     @Override
     public void subscribe(String service, ChangedListener listener) {
-        final TreeCache cache =TreeCache.newBuilder(client, "/"+service)
-                .setCacheData(true) //Sets whether or not to cache byte data per node; default true.
-                .setMaxDepth(2) //获取depth
-                .build();
-        cache.getListenable().addListener((curator, event) -> {
-            // 有任何节点变动这里会执行
-            System.out.println("zk subscribe event: " + event);
-            List<String> nodes = fetchAll(service);
-            listener.fire(new Event(nodes));
-        });
+        final CuratorCache cache = CuratorCache.builder(client, "/"+service
+                        ).build();
+        CuratorCacheListener cacheListener = CuratorCacheListener.builder()
+                        .forAll((type, oldNode, newNode) -> {
+                    // 有任何节点变动这里会执行
+                    System.out.println("zk subscribe event: " + type);
+                    List<String> nodes = fetchAll(service);
+                    listener.fire(new Event(nodes));
+                }).build();
+        cache.listenable().addListener(cacheListener);
         cache.start();
     }
 
