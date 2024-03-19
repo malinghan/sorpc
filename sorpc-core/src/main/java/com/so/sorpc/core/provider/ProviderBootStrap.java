@@ -69,6 +69,7 @@ public class ProviderBootStrap implements ApplicationContextAware {
     }
 
     @PreDestroy
+    @DependsOn({"registryCenter"})
     public void stop() {
         skeleton.keySet().forEach(this::unregisterService);
     }
