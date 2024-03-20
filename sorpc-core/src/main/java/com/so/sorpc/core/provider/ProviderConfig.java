@@ -27,11 +27,11 @@ public class ProviderConfig {
         return x -> {
             System.out.println("providerBootStrap start...");
             providerBootStrap.start();
-            System.out.println("providerBootStrap end...");
+            System.out.println("providerBootStrap started...");
         };
     }
 
-    @Bean(initMethod = "start", destroyMethod = "stop")
+    @Bean //(initMethod = "start", destroyMethod = "stop")
     public RegistryCenter providerRegistryCenter() {
         return new ZkRegistryCenter();
     }

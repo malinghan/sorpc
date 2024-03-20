@@ -38,6 +38,8 @@ public class ProviderBootStrap implements ApplicationContextAware {
 
     ApplicationContext applicationContext;
 
+    RegistryCenter rc;
+
     private MultiValueMap<String, ProviderMeta> skeleton = new LinkedMultiValueMap<>();   //获取到的服务接口存根
 
     private String instance;
@@ -58,24 +60,24 @@ public class ProviderBootStrap implements ApplicationContextAware {
 
     @SneakyThrows
     public void start() {
+        rc = applicationContext.getBean(RegistryCenter.class);
+        rc.start();
         String ip = InetAddress.getLocalHost().getHostAddress();
         instance = ip + "_" + port;
         skeleton.keySet().forEach(this::registerService);
     }
 
     public void registerService(String service) {
-        RegistryCenter rc = applicationContext.getBean(RegistryCenter.class);
         rc.register(service, instance);
     }
 
     @PreDestroy
-    @DependsOn({"registryCenter"})
     public void stop() {
         skeleton.keySet().forEach(this::unregisterService);
+        rc.stop();
     }
 
     public void unregisterService(String service) {
-        RegistryCenter rc = applicationContext.getBean(RegistryCenter.class);
         rc.unregister(service, instance);
     }
 
