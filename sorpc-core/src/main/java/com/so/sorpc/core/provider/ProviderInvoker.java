@@ -29,16 +29,9 @@ public class ProviderInvoker {
     public RpcResponse<Object> invoke(RpcRequest rpcRequest) {
         List<ProviderMeta> providerMetas = skeleton.get(rpcRequest.getService());
         Object result = null;
-        ProviderMeta meta = null;
-        for (ProviderMeta providerMeta : providerMetas) {
-            if(providerMeta.getMethodSign().equals(rpcRequest.getMethodSign())) {
-                meta = providerMeta;
-                break;
-            }
-        }
-        if (meta == null) {
-            System.out.println("未通过request中service定义找到匹配的meta, service:" + rpcRequest.getService());
-        }
+        ProviderMeta meta =  providerMetas.stream()
+                .filter(x -> x.getMethodSign().equals(rpcRequest.getMethodSign()))
+                .findFirst().orElse(null);
         Object bean =  meta.getServiceImpl();
         //查看是否通过反射拿到了对象  java.lang.Class
         System.out.println("服务调用方获取到的接口信息为: "+ bean.getClass().getCanonicalName());
