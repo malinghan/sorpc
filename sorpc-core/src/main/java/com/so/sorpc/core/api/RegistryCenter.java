@@ -2,6 +2,8 @@ package com.so.sorpc.core.api;
 
 import java.util.List;
 
+import com.so.sorpc.core.meta.InstanceMeta;
+import com.so.sorpc.core.meta.ServiceMeta;
 import com.so.sorpc.core.registry.ChangedListener;
 
 /**
@@ -14,19 +16,21 @@ public interface RegistryCenter {
     void stop();
 
     //provider
-    void register(String service, String instance);
+    void register(ServiceMeta service, InstanceMeta instance);
 
-    void unregister(String service, String instance);
+    void unregister(ServiceMeta service, InstanceMeta instance);
 
-    void subscribe(String service, ChangedListener listener);
+    void subscribe(ServiceMeta service, ChangedListener listener);
 
-    List<String> fetchAll(String service);
+    void unsubscribe(ServiceMeta service, ChangedListener listener);
+
+    List<InstanceMeta> fetchAll(ServiceMeta service);
 
     class StaticRegistryCenter implements RegistryCenter {
 
-        List<String> providers;
+        List<InstanceMeta> providers;
 
-        public StaticRegistryCenter(List<String> providers) {
+        public StaticRegistryCenter(List<InstanceMeta> providers) {
             this.providers = providers;
         }
 
@@ -41,22 +45,27 @@ public interface RegistryCenter {
         }
 
         @Override
-        public void register(String service, String instance) {
+        public void register(ServiceMeta service, InstanceMeta instance) {
 
         }
 
         @Override
-        public void unregister(String service, String instance) {
+        public void unregister(ServiceMeta service, InstanceMeta instance) {
 
         }
 
         @Override
-        public void subscribe(String service, ChangedListener listener) {
+        public void subscribe(ServiceMeta service, ChangedListener listener) {
 
         }
 
         @Override
-        public List<String> fetchAll(String service) {
+        public void unsubscribe(ServiceMeta service, ChangedListener listener) {
+
+        }
+
+        @Override
+        public List<InstanceMeta> fetchAll(ServiceMeta service) {
             return providers;
         }
     }

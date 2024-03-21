@@ -2,6 +2,8 @@ package com.so.sorpc.core.registry;
 
 import java.util.List;
 
+import com.so.sorpc.core.meta.InstanceMeta;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
@@ -12,5 +14,5 @@ import lombok.Data;
 @Data
 @AllArgsConstructor
 public class Event {
-    List<String> data;
+    List<InstanceMeta> data;
 }

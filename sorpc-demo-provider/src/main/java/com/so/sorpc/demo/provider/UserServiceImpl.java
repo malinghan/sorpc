@@ -23,9 +23,6 @@ import com.so.sorpc.demo.api.UserService;
 @SoRpcProvider
 public class UserServiceImpl implements UserService {
 
-//    @Value("server.port")
-//    int server;
-
     @Autowired
     Environment environment;
 

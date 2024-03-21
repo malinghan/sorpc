@@ -1,2 +1,11 @@
 server:
-  port: 8082
+  port: 8081
+sorpc:
+  zkServer: localhost:2181
+  zkRoot: sorpc
+
+
+app:
+  id: soapp1
+  env: dev
+  namespace: public

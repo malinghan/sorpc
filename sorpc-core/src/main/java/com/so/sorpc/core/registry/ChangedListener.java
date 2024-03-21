@@ -5,5 +5,6 @@ package com.so.sorpc.core.registry;
  * Created on 2024-03-18
  */
 public interface ChangedListener {
+
     void fire(Event event);
 }

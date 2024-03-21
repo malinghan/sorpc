@@ -2,3 +2,10 @@ server:
   port: 8088
 sorpc:
   providers: http://localhost:8081,http://localhost:8082,http://localhost:8083
+  zkServer: localhost:2181
+  zkRoot: sorpc
+
+app:
+  id: soapp1
+  env: dev
+  namespace: public

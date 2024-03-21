@@ -2,6 +2,8 @@ package com.so.sorpc.core.api;
 
 import java.util.List;
 
+import com.so.sorpc.core.meta.InstanceMeta;
+
 import lombok.Data;
 
 /**
@@ -12,7 +14,7 @@ import lombok.Data;
 public class RpcContext {
     List<Filter> filters; // todo
 
-    Router router;
+    Router<InstanceMeta> router;
 
-    LoadBalancer loadBalancer;
+    LoadBalancer<InstanceMeta>  loadBalancer;
 }

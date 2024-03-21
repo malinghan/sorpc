@@ -7,7 +7,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
 
 import com.so.sorpc.core.api.RegistryCenter;
-import com.so.sorpc.core.registry.ZkRegistryCenter;
+import com.so.sorpc.core.registry.zk.ZkRegistryCenter;
 
 /**
  * @author someecho <linghan.ma@gmail.com>
@@ -17,8 +17,13 @@ import com.so.sorpc.core.registry.ZkRegistryCenter;
 public class ProviderConfig {
 
     @Bean
-    ProviderBootStrap getProviderBootStrap() {
+    ProviderBootStrap providerBootstrap() {
         return new ProviderBootStrap();
+    }
+
+    @Bean
+    public ProviderInvoker providerInvoker(@Autowired ProviderBootStrap providerBootStrap) {
+        return new ProviderInvoker(providerBootStrap);
     }
 
     @Bean

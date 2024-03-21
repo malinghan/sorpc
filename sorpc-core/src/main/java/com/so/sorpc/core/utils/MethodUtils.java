@@ -1,8 +1,12 @@
 package com.so.sorpc.core.utils;
 
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 /**
  * @author someecho <linghan.ma@gmail.com>
@@ -36,6 +40,22 @@ public class MethodUtils {
                 c -> methodSign.append("_").append(c.getCanonicalName())
         );
         return methodSign.toString();
+    }
+
+    public static List<Field> getAnnotatedFields(Class<?> beanClass, Class<? extends Annotation> annotationClass) {
+        List<Field> annotatedFields = new ArrayList<>();
+        //TODO
+        while (beanClass != null) {
+            //            System.out.println("获取到的beanClass:" + beanClass.getCanonicalName());
+            Field[] fields = beanClass.getDeclaredFields();
+            for (Field field : fields) {
+                if(field.isAnnotationPresent(annotationClass)) {
+                    annotatedFields.add(field);
+                }
+            }
+            beanClass = beanClass.getSuperclass();
+        }
+        return annotatedFields;
     }
 
     public static void main(String[] args) {

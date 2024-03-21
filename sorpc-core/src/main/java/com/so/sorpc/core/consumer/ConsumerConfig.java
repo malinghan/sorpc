@@ -1,7 +1,5 @@
 package com.so.sorpc.core.consumer;
 
-import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.ApplicationRunner;
@@ -13,7 +11,8 @@ import com.so.sorpc.core.api.LoadBalancer;
 import com.so.sorpc.core.api.RegistryCenter;
 import com.so.sorpc.core.api.Router;
 import com.so.sorpc.core.cluster.RoundRobinLoadBalancer;
-import com.so.sorpc.core.registry.ZkRegistryCenter;
+import com.so.sorpc.core.meta.InstanceMeta;
+import com.so.sorpc.core.registry.zk.ZkRegistryCenter;
 
 /**
  * @author someecho <linghan.ma@gmail.com>
@@ -41,13 +40,13 @@ public class ConsumerConfig {
     }
 
     @Bean
-    public LoadBalancer loadBalancer() {
+    public LoadBalancer<InstanceMeta> loadBalancer() {
         //return LoadBalancer.Default;
-        return new RoundRobinLoadBalancer();
+        return new RoundRobinLoadBalancer<>();
     }
 
     @Bean
-    public Router router() {
+    public Router<InstanceMeta> router() {
         return Router.Default;
     }
 

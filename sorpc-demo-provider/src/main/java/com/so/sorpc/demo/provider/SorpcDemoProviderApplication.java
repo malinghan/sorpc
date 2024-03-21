@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.so.sorpc.core.api.RpcRequest;
 import com.so.sorpc.core.api.RpcResponse;
-import com.so.sorpc.core.provider.ProviderBootStrap;
+import com.so.sorpc.core.provider.ProviderInvoker;
 import com.so.sorpc.core.provider.ProviderConfig;
 
 @SpringBootApplication
@@ -25,12 +25,12 @@ public class SorpcDemoProviderApplication {
     }
 
     @Autowired
-    ProviderBootStrap providerBootStrap;
+    ProviderInvoker providerInvoker;
 
 
     @RequestMapping("/")
-    RpcResponse invoke(@RequestBody  RpcRequest request) {
-       return providerBootStrap.invoke(request);
+    RpcResponse<Object> invoke(@RequestBody  RpcRequest request) {
+       return providerInvoker.invoke(request);
     }
 
     /**
@@ -95,7 +95,7 @@ public class SorpcDemoProviderApplication {
            rpcRequest.setMethodSign("getLongIds@0");
            rpcRequest.setArgs(new Object[]{});
 
-           RpcResponse rpcResponse4 = invoke(rpcRequest);
+           RpcResponse<Object> rpcResponse4 = invoke(rpcRequest);
            System.out.println("return: " + rpcResponse4.toString());
        };
     }
