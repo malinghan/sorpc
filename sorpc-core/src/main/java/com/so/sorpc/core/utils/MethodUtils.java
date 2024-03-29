@@ -30,7 +30,7 @@ public class MethodUtils {
         return false;
     }
 
-    public static boolean checkIfObjectMethod(final Method method) {
+    public static boolean checkLocalMethod(final Method method) {
         return  Modifier.isPublic(method.getModifiers())
                 && method.getDeclaringClass().equals(Object.class);
     }

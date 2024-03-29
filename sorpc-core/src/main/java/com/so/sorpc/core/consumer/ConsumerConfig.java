@@ -13,6 +13,7 @@ import com.so.sorpc.core.api.RegistryCenter;
 import com.so.sorpc.core.api.Router;
 import com.so.sorpc.core.cluster.RoundRobinLoadBalancer;
 import com.so.sorpc.core.filter.CacheFilter;
+import com.so.sorpc.core.filter.MockFilter;
 import com.so.sorpc.core.meta.InstanceMeta;
 import com.so.sorpc.core.registry.zk.ZkRegistryCenter;
 
@@ -61,8 +62,13 @@ public class ConsumerConfig {
        // return new RegistryCenter.StaticRegistryCenter(List.of(servers.split(",")));
     }
 
-    @Bean
-    public Filter filter() {
-        return new CacheFilter();
-    }
+//    @Bean
+//    public Filter filter() {
+//        return new CacheFilter();
+//    }
+
+//    @Bean
+//    public Filter filter() {
+//        return new MockFilter();
+//    }
 }

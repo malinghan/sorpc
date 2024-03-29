@@ -108,7 +108,7 @@ public class ProviderBootStrap implements ApplicationContextAware {
                     log.info("获取到的接口信息为:" + service.getCanonicalName());
                     Method[] methods = service.getMethods();
                     for (Method method : methods) {
-                        if (MethodUtils.checkIfObjectMethod(method)) {
+                        if (MethodUtils.checkLocalMethod(method)) {
                             continue;
                         }
                         ProviderMeta providerMeta = createProviderMeta(impl, method);
