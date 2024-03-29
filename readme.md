@@ -18,7 +18,6 @@ v4.0
 
 v5.0
 - [x] 修复unregister与client.close()顺序问题
-- [X] 修复unregister与client.close()顺序问题
 - [X] 把ProviderBootstrap中invoker方法分离出去，放到ProviderInvoker
 - [X] 把ConsumerBootstrap在findAnnotationFields，放到MethodUtils中
 - [X] 把SoInvocationHandler中OkhttpClient单独抽象处理，使其可扩展成不同http调用
@@ -28,7 +27,10 @@ v5.0
 - [X] TreeCache改成最新的CuratorCache
 
 v6.0
-
+- [x] 实现RPC的Filter功能，主要包含
+  - [x] CacheFilter,为请求增加缓存,如果请求参数在一段时间内一样，就返回缓存，减少调用次数，提升性能
+  - [x] MockFilter, 可以mock服务端的返回
+  - [x] 使用sl4j替换sout
 
 v7.0
 
