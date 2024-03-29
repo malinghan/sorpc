@@ -2,6 +2,7 @@ package com.so.sorpc.demo.provider;
 
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -91,6 +92,26 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User ex(boolean flag) {
-        return null;
+        if(flag) throw new RuntimeException("just throw an exception");
+        return new User(100, "SO100");
+    }
+
+    String timeoutPorts = "8081,8094";
+
+    @Override
+    public User timeout(int timeout) {
+        String port = environment.getProperty("server.port");
+        if(Arrays.asList(timeoutPorts.split(",")).contains(port)) {
+            try {
+                Thread.sleep(timeout);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        return new User(1001, "SO1001-" + port);
+    }
+
+    public void setTimeoutPorts(String timeoutPorts) {
+        this.timeoutPorts = timeoutPorts;
     }
 }

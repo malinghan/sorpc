@@ -48,6 +48,12 @@ public class ConsumerBootStrap implements ApplicationContextAware, EnvironmentAw
     @Value("${app.env}")
     private String env;
 
+    @Value("${app.retries}")
+    private int retries;
+
+    @Value("${app.timeout}")
+    private int timeout;
+
     private Map<String, Object> stub = new HashMap<>();   //获取到客户端接口调用存根
 
     public void start() {
@@ -60,6 +66,9 @@ public class ConsumerBootStrap implements ApplicationContextAware, EnvironmentAw
         context.setRouter(router);
         context.setLoadBalancer(loadBalancer);
         context.setFilters(filters);
+        context.getParameters().put("app.retries", String.valueOf(retries)); //设置post invoke重试次数
+        context.getParameters().put("app.timeout", String.valueOf(timeout)); //设置httpClient超时时间
+
 
         String[] names = applicationContext.getBeanDefinitionNames();
         for (String name : names) {

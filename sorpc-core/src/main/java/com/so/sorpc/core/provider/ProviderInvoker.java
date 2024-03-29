@@ -8,6 +8,7 @@ import org.springframework.util.MultiValueMap;
 import com.alibaba.fastjson.JSONObject;
 import com.so.sorpc.core.api.RpcRequest;
 import com.so.sorpc.core.api.RpcResponse;
+import com.so.sorpc.core.exception.RpcException;
 import com.so.sorpc.core.meta.ProviderMeta;
 import com.so.sorpc.core.utils.TypeUtils;
 
@@ -36,22 +37,20 @@ public class ProviderInvoker {
                 .findFirst().orElse(null);
         Object bean =  meta.getServiceImpl();
         //查看是否通过反射拿到了对象  java.lang.Class
-        log.debug("服务调用方获取到的接口信息为: "+ bean.getClass().getCanonicalName());
+        log.debug("provider get bean class: "+ bean.getClass().getCanonicalName());
         Method method = meta.getMethod();
         RpcResponse<Object> response = new RpcResponse<>();
         try {
             //provider侧反序列化处理
             Object[] args = processArgs(rpcRequest.getArgs(), method.getParameterTypes());
             result = method.invoke(bean, args);
-            log.debug("服务调用方获取到的输出: "+ JSONObject.toJSONString(result));
+            log.debug("provider process result: "+ JSONObject.toJSONString(result));
             response.setData(result);
             response.setStatus(true);
         } catch (IllegalAccessException e) {
-            response.setEx(new RuntimeException(e.getMessage()));
-            e.printStackTrace();
+            response.setEx(new RpcException(e.getMessage()));
         } catch (InvocationTargetException e) {
-            response.setEx(new RuntimeException(e.getTargetException().getMessage()));
-            e.printStackTrace();
+            response.setEx(new RpcException(e.getTargetException().getMessage()));
         }
         return response;
     }

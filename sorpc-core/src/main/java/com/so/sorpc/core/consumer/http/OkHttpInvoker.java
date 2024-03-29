@@ -26,29 +26,29 @@ public class OkHttpInvoker implements HttpInvoker {
 
     final static MediaType JSONTYPE = MediaType.get("application/json; charset=utf-8");
 
-    public OkHttpInvoker() {
+    public OkHttpInvoker(int timeout) {
         client = new OkHttpClient.Builder()
                 .connectionPool(new ConnectionPool(16, 60, TimeUnit.SECONDS))
-                .readTimeout(1, TimeUnit.SECONDS)
-                .writeTimeout(1, TimeUnit.SECONDS)
-                .connectTimeout(1, TimeUnit.SECONDS)
+                .readTimeout(timeout, TimeUnit.MILLISECONDS)
+                .writeTimeout(timeout, TimeUnit.MILLISECONDS)
+                .connectTimeout(timeout, TimeUnit.MILLISECONDS)
                 .build();
     }
     @Override
     public RpcResponse<?> post(RpcRequest rpcRequest, String url) {
         String reqJson = JSON.toJSONString(rpcRequest);
-        log.info(" ===> url = " + url);
-        log.info(" ===> reqJson = " + reqJson);
+        log.debug(" ===> url = " + url);
+        log.debug(" ===> reqJson = " + reqJson);
         Request request = new Request.Builder()
                 .url(url)
                 .post(RequestBody.create(reqJson, JSONTYPE))
                 .build();
         try {
             String respJson = Objects.requireNonNull(client.newCall(request).execute().body()).string();
-            log.info(" ===> respJson = " + respJson);
+            log.debug(" ===> respJson = " + respJson);
             return JSON.parseObject(respJson, RpcResponse.class);
         } catch (IOException e) {
-            e.printStackTrace();
+            //e.printStackTrace();
             throw new RuntimeException(e);
         }
     }

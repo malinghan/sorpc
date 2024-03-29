@@ -8,12 +8,14 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.so.sorpc.core.api.RpcRequest;
 import com.so.sorpc.core.api.RpcResponse;
 import com.so.sorpc.core.provider.ProviderInvoker;
 import com.so.sorpc.core.provider.ProviderConfig;
+import com.so.sorpc.demo.api.UserService;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -30,10 +32,21 @@ public class SorpcDemoProviderApplication {
     @Autowired
     ProviderInvoker providerInvoker;
 
+    @Autowired
+    UserService userService;
 
     @RequestMapping("/")
     RpcResponse<Object> invoke(@RequestBody  RpcRequest request) {
        return providerInvoker.invoke(request);
+    }
+
+    @RequestMapping("/ports")
+    public RpcResponse<String> ports(@RequestParam("ports") String ports) {
+        userService.setTimeoutPorts(ports);
+        RpcResponse<String> response = new RpcResponse<>();
+        response.setStatus(true);
+        response.setData("OK:" + ports);
+        return response;
     }
 
     /**

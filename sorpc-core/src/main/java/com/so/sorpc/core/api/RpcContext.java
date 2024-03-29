@@ -1,6 +1,8 @@
 package com.so.sorpc.core.api;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import com.so.sorpc.core.meta.InstanceMeta;
 
@@ -17,4 +19,6 @@ public class RpcContext {
     Router<InstanceMeta> router;
 
     LoadBalancer<InstanceMeta>  loadBalancer;
+
+    private Map<String, String> parameters = new HashMap<>();
 }

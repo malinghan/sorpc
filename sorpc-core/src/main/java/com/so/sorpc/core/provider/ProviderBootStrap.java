@@ -57,8 +57,8 @@ public class ProviderBootStrap implements ApplicationContextAware {
     public void buildProviders() {
         Map<String, Object> providers = applicationContext.getBeansWithAnnotation(SoRpcProvider.class);
         rc = applicationContext.getBean(RegistryCenter.class);
-        log.info("输出通过注解获取到的providers信息");
-        providers.forEach((x,y) -> log.info("获取到的服务实现为: " + x));
+        log.info("output all providers");
+        providers.forEach((x,y) -> log.info("provider is putting : " + x));
         //把获取到的服务实现,放到skeleton中
         providers.values().forEach(this::genInterface);
     }
@@ -105,7 +105,7 @@ public class ProviderBootStrap implements ApplicationContextAware {
         //类型信息, 一个类有多个接口
         Arrays.stream(impl.getClass().getInterfaces()).forEach(
                 service -> {
-                    log.info("获取到的接口信息为:" + service.getCanonicalName());
+                    log.info("receive service:" + service.getCanonicalName());
                     Method[] methods = service.getMethods();
                     for (Method method : methods) {
                         if (MethodUtils.checkLocalMethod(method)) {
