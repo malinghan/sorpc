@@ -30,14 +30,16 @@ v6.0
 - [x] 实现RPC的Filter功能，主要包含
   - [x] CacheFilter,为请求增加缓存,如果请求参数在一段时间内一样，就返回缓存，减少调用次数，提升性能
   - [x] MockFilter, 可以mock服务端的返回
-  - [x] 使用sl4j替换sout
+- [x] 使用sl4j替换sout
 
 v7.0
-- [x] 让项目可以通过maven test跑通, 不依赖于springboot打包
+- [x] 去除不必要的依赖，为jar包瘦身，让项目可以通过maven test跑通, 不依赖于springboot打包
 - [x] mock zookeeper，使得provider和consumer可以做单元测试
 
 
 v8.0
-
+- [x] httpInvoker调用异常处理，参数配置化
+- [x] 把所有RuntimeException定义成统一的自定义的RPCException
+- [x] 新增consumer调用provider重试策略
 
 v9.0
