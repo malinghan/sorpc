@@ -33,6 +33,8 @@ v6.0
   - [x] 使用sl4j替换sout
 
 v7.0
+- [x] 让项目可以通过maven test跑通, 不依赖于springboot打包
+- [x] mock zookeeper，使得provider和consumer可以做单元测试
 
 
 v8.0
