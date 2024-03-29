@@ -1,0 +1,16 @@
+server:
+  port: 8089
+sorpc:
+  providers: http://localhost:8081,http://localhost:8082,http://localhost:8083
+  zkServer: localhost:2182
+  zkRoot: sorpc
+
+app:
+  id: soapp1
+  env: dev
+  namespace: public
+
+logging:
+  level:
+    root: error
+    com.so.sorpc: debug # 这个基本改成info就不会输出debug日志

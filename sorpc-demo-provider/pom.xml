@@ -9,13 +9,12 @@
     </parent>
     <artifactId>sorpc-demo-provider</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <properties>
-        <java.version>17</java.version>
-    </properties>
+
     <dependencies>
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
+            <version>${springboot.version}</version>
         </dependency>
 
         <dependency>
@@ -27,6 +26,7 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
+            <version>${springboot.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -56,6 +56,27 @@
                         </exclude>
                     </excludes>
                 </configuration>
+                <!--整个fat jar-->
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>repackage</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <!--这里是单元测试所需要的编译插件 surefire-->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>3.2.3</version>
+                <dependencies>
+                    <dependency>
+                        <groupId>org.apache.maven.surefire</groupId>
+                        <artifactId>surefire-junit-platform</artifactId>
+                        <version>3.2.3</version>
+                    </dependency>
+                </dependencies>
             </plugin>
         </plugins>
     </build>
