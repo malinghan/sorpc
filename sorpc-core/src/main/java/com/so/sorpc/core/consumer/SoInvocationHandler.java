@@ -5,6 +5,9 @@ import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.util.List;
 
+import org.jetbrains.annotations.Nullable;
+
+import com.so.sorpc.core.api.Filter;
 import com.so.sorpc.core.api.RpcContext;
 import com.so.sorpc.core.api.RpcRequest;
 import com.so.sorpc.core.api.RpcResponse;
@@ -45,12 +48,30 @@ public class SoInvocationHandler implements InvocationHandler {
         rpcRequest.setMethodSign(MethodUtils.methodSign(method));
         rpcRequest.setArgs(args);
 
+        for (Filter filter : this.rpcContext.getFilters()) {
+            Object objectResult = filter.preFilter(rpcRequest);
+            if (objectResult != null) {
+                log.info(filter.getClass().getName() + "==> prefilter" + objectResult);
+                return objectResult;
+            }
+        }
+
         List<InstanceMeta> instanceMetas = rpcContext.getRouter().choose(providers);
         InstanceMeta instanceMeta = rpcContext.getLoadBalancer().choose(instanceMetas);
 
         log.info("post request url:" + instanceMeta.toUrl());
         RpcResponse<?> rpcResponse =  httpInvoker.post(rpcRequest, instanceMeta.toUrl());
 
+        Object objectResult = castMethodResponse(method, rpcResponse);
+
+        for (Filter filter : this.rpcContext.getFilters()) {
+            objectResult = filter.postFilter(rpcRequest, rpcResponse, objectResult);
+        }
+        return objectResult;
+    }
+
+    @Nullable
+    private Object castMethodResponse(Method method, RpcResponse<?> rpcResponse) {
         //判断状态
         if (rpcResponse.isStatus()) {
             //反序列化为object

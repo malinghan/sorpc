@@ -15,6 +15,7 @@ import org.springframework.context.EnvironmentAware;
 import org.springframework.core.env.Environment;
 
 import com.so.sorpc.core.annotation.SoRpcConsumer;
+import com.so.sorpc.core.api.Filter;
 import com.so.sorpc.core.api.LoadBalancer;
 import com.so.sorpc.core.api.RegistryCenter;
 import com.so.sorpc.core.api.Router;
@@ -53,10 +54,12 @@ public class ConsumerBootStrap implements ApplicationContextAware, EnvironmentAw
         Router<InstanceMeta> router = applicationContext.getBean(Router.class);
         LoadBalancer<InstanceMeta> loadBalancer = applicationContext.getBean(LoadBalancer.class);
         RegistryCenter rc = applicationContext.getBean(RegistryCenter.class);
+        List<Filter> filters = applicationContext.getBeansOfType(Filter.class).values().stream().toList();
 
         RpcContext context = new RpcContext();
         context.setRouter(router);
         context.setLoadBalancer(loadBalancer);
+        context.setFilters(filters);
 
         String[] names = applicationContext.getBeanDefinitionNames();
         for (String name : names) {

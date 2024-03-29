@@ -7,6 +7,7 @@ import com.so.sorpc.core.meta.ServiceMeta;
 import com.so.sorpc.core.registry.ChangedListener;
 
 /**
+ * 注册中心
  * @author someecho <linghan.ma@gmail.com>
  * Created on 2024-03-17
  */
