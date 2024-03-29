@@ -88,4 +88,9 @@ public class UserServiceImpl implements UserService {
     public List<User> getByMap(Map<String, Integer> map) {
         return List.of(new User(1, "sososss"));
     }
+
+    @Override
+    public User ex(boolean flag) {
+        return null;
+    }
 }

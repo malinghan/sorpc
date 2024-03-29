@@ -33,4 +33,6 @@ public interface UserService {
 
     List<User> getByMap(Map<String, Integer> map);
 
+    User ex(boolean flag);
+
 }

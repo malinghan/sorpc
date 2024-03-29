@@ -100,6 +100,14 @@ public class SorpcDemoConsumerApplication {
             //getByUser
             String str = userService.toString();
             log.info(str);
+
+            System.out.println("Case 17. >>===[测试服务端抛出一个RuntimeException异常]===");
+            try {
+                User userEx = userService.ex(true);
+                System.out.println(userEx);
+            } catch (RuntimeException e) {
+                System.out.println(" ===> exception: " + e.getMessage());
+            }
         };
     }
 }
