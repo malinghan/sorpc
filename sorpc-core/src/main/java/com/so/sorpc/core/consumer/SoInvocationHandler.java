@@ -13,10 +13,14 @@ import com.so.sorpc.core.consumer.http.OkHttpInvoker;
 import com.so.sorpc.core.meta.InstanceMeta;
 import com.so.sorpc.core.utils.MethodUtils;
 import com.so.sorpc.core.utils.TypeUtils;
+
+import lombok.extern.slf4j.Slf4j;
+
 /**
  * @author someecho <linghan.ma@gmail.com>
  * Created on 2024-03-11
  */
+@Slf4j
 public class SoInvocationHandler implements InvocationHandler {
 
     Class<?> service;
@@ -44,7 +48,7 @@ public class SoInvocationHandler implements InvocationHandler {
         List<InstanceMeta> instanceMetas = rpcContext.getRouter().choose(providers);
         InstanceMeta instanceMeta = rpcContext.getLoadBalancer().choose(instanceMetas);
 
-        System.out.println("post request url:" + instanceMeta.toUrl());
+        log.info("post request url:" + instanceMeta.toUrl());
         RpcResponse<?> rpcResponse =  httpInvoker.post(rpcRequest, instanceMeta.toUrl());
 
         //判断状态

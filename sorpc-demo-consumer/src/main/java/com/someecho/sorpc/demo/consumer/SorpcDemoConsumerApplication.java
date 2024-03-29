@@ -20,9 +20,12 @@ import com.so.sorpc.core.consumer.ConsumerConfig;
 import com.so.sorpc.demo.api.User;
 import com.so.sorpc.demo.api.UserService;
 
+import lombok.extern.slf4j.Slf4j;
+
 @SpringBootApplication
 @RestController
 @Import({ConsumerConfig.class})
+@Slf4j
 public class SorpcDemoConsumerApplication {
 
     @SoRpcConsumer
@@ -43,62 +46,60 @@ public class SorpcDemoConsumerApplication {
     @Bean
     public ApplicationRunner consumerRunner()  {
         return x -> {
-            System.out.println(">>>>>>> test case1");
+            log.info(">>>>>>> test case1");
             User user = userService.findById(1);
-            System.out.println(user.toString());
+            log.info(user.toString());
 
             User user1 = userService.findById("hello");
-            System.out.println(user1.toString());
+            log.info(user1.toString());
 
 //            String userToString = userService.toString();
-//            System.out.println(userToString);
-            System.out.println(">>>>>>> test case2");
+//            log.info(userToString);
+            log.info(">>>>>>> test case2");
             int[] ids = userService.getIds();
-            for (int id : ids) {
-                System.out.println(id);
-            }
-            System.out.println(">>>>>>> test case3");
+
+            log.info(">>>>>>> test case3");
             long[] longIds = userService.getLongIds();
             for (long id : longIds) {
-                System.out.println(id);
+                log.info(id + "");
             }
-            System.out.println(">>>>>>> test case4");
+            log.info(">>>>>>> test case4");
 //            int[] getIds(int[] ids)
             int[] ids1 = userService.getIds(new int[]{1,2,3});
             for (long id : ids1) {
-                System.out.println(id);
+                log.info(id + "");
             }
 
-            System.out.println(">>>>>>> test case5");
+            log.info(">>>>>>> test case5");
             //getByUser
             User user2 = new User(1, "so");
             int res = userService.getByUser(user2);
-            System.out.println(res);
+            log.info(res + "");
 
-            System.out.println(">>>>>>> test case6");
+            log.info(">>>>>>> test case6");
             //getByUsers
             List<User> user3 = new ArrayList<>();
             user3.add(new User(1, "so"));
             user3.add(new User(2, "so"));
             user3.add(new User(3, "so"));
             List<User> res1 = userService.getByUsers(user3);
-            System.out.println("输出 getByUsers:");
-            System.out.println(JSONObject.toJSON(res1));
+            log.info("输出 getByUsers:");
+            log.info(JSONObject.toJSON(res1) + "");
 
             //getByUsers
-            System.out.println(">>>>>>> test case7");
+            log.info(">>>>>>> test case7");
             Map<String, List<User>> user4 = Map.of("sso",
                     List.of(new User(1, "so"),
                             new User(2, "so"),
                             new User(3, "so")));
             Map<String, List<User>> res2 = userService.getByUserMap(user4);
-            System.out.println("输出 getByUserMap:");
-            System.out.println(JSONObject.toJSON(res2));
+            log.info("输出 getByUserMap:");
+            log.info(JSONObject.toJSON(res2) + "");
 
-            System.out.println(">>>>>>> test case8");
+            log.info(">>>>>>> test case8");
             //getByUser
             String str = userService.toString();
-            System.out.println(str);
+            log.info(str);
         };
     }
 }

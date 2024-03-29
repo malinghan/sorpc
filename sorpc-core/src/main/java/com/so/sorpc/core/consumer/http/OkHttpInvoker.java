@@ -8,6 +8,7 @@ import com.alibaba.fastjson.JSON;
 import com.so.sorpc.core.api.RpcRequest;
 import com.so.sorpc.core.api.RpcResponse;
 
+import lombok.extern.slf4j.Slf4j;
 import okhttp3.ConnectionPool;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
@@ -18,6 +19,7 @@ import okhttp3.RequestBody;
  * @author someecho <linghan.ma@gmail.com>
  * Created on 2024-03-21
  */
+@Slf4j
 public class OkHttpInvoker implements HttpInvoker {
 
     OkHttpClient client;
@@ -35,15 +37,15 @@ public class OkHttpInvoker implements HttpInvoker {
     @Override
     public RpcResponse<?> post(RpcRequest rpcRequest, String url) {
         String reqJson = JSON.toJSONString(rpcRequest);
-        System.out.println(" ===> url = " + url);
-        System.out.println(" ===> reqJson = " + reqJson);
+        log.info(" ===> url = " + url);
+        log.info(" ===> reqJson = " + reqJson);
         Request request = new Request.Builder()
                 .url(url)
                 .post(RequestBody.create(reqJson, JSONTYPE))
                 .build();
         try {
             String respJson = Objects.requireNonNull(client.newCall(request).execute().body()).string();
-            System.out.println(" ===> respJson = " + respJson);
+            log.info(" ===> respJson = " + respJson);
             return JSON.parseObject(respJson, RpcResponse.class);
         } catch (IOException e) {
             e.printStackTrace();

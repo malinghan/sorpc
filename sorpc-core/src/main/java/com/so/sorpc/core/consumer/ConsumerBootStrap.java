@@ -24,12 +24,14 @@ import com.so.sorpc.core.meta.ServiceMeta;
 import com.so.sorpc.core.utils.MethodUtils;
 
 import lombok.Data;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * @author someecho <linghan.ma@gmail.com>
  * Created on 2024-03-11
  */
 @Data
+@Slf4j
 public class ConsumerBootStrap implements ApplicationContextAware, EnvironmentAware {
 
     ApplicationContext applicationContext;
@@ -63,7 +65,7 @@ public class ConsumerBootStrap implements ApplicationContextAware, EnvironmentAw
             List<Field> fields = MethodUtils.getAnnotatedFields(bean.getClass(), SoRpcConsumer.class);
 
             for (Field field : fields) {
-                System.out.println(" ===> " + field.getName());
+                log.debug(" ===> " + field.getName());
                 try {
                     Class<?> service = field.getType();
                     String serviceName = service.getCanonicalName();
@@ -93,7 +95,7 @@ public class ConsumerBootStrap implements ApplicationContextAware, EnvironmentAw
                     .name(serviceName)
                     .build();
             List<InstanceMeta> providers = registryCenter.fetchAll(serviceMeta);
-            System.out.println(" ===> map to providers: ");
+            log.debug(" ===> map to providers: ");
             providers.forEach(System.out::println);
             //TODO 这里简化了subscribe处理, 将providers全部刷新了一下
             registryCenter.subscribe(serviceMeta, event -> {

@@ -9,11 +9,14 @@ import org.springframework.core.annotation.Order;
 import com.so.sorpc.core.api.RegistryCenter;
 import com.so.sorpc.core.registry.zk.ZkRegistryCenter;
 
+import lombok.extern.slf4j.Slf4j;
+
 /**
  * @author someecho <linghan.ma@gmail.com>
  * Created on 2024-03-07
  */
 @Configuration
+@Slf4j
 public class ProviderConfig {
 
     @Bean
@@ -30,9 +33,9 @@ public class ProviderConfig {
     @Order(Integer.MIN_VALUE)
     ApplicationRunner providerBootStrapRunner(@Autowired ProviderBootStrap providerBootStrap) {
         return x -> {
-            System.out.println("providerBootStrap start...");
+            log.info("providerBootStrap start...");
             providerBootStrap.start();
-            System.out.println("providerBootStrap started...");
+            log.info("providerBootStrap started...");
         };
     }
 

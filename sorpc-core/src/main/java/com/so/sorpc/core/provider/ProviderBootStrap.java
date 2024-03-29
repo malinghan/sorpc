@@ -22,12 +22,14 @@ import jakarta.annotation.PostConstruct;
 import jakarta.annotation.PreDestroy;
 import lombok.Data;
 import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * @author someecho <linghan.ma@gmail.com>
  * Created on 2024-03-07
  */
 @Data
+@Slf4j
 public class ProviderBootStrap implements ApplicationContextAware {
 
     ApplicationContext applicationContext;
@@ -55,8 +57,8 @@ public class ProviderBootStrap implements ApplicationContextAware {
     public void buildProviders() {
         Map<String, Object> providers = applicationContext.getBeansWithAnnotation(SoRpcProvider.class);
         rc = applicationContext.getBean(RegistryCenter.class);
-        System.out.println("输出通过注解获取到的providers信息");
-        providers.forEach((x,y) -> System.out.println("获取到的服务实现为: " + x));
+        log.info("输出通过注解获取到的providers信息");
+        providers.forEach((x,y) -> log.info("获取到的服务实现为: " + x));
         //把获取到的服务实现,放到skeleton中
         providers.values().forEach(this::genInterface);
     }
@@ -103,14 +105,14 @@ public class ProviderBootStrap implements ApplicationContextAware {
         //类型信息, 一个类有多个接口
         Arrays.stream(impl.getClass().getInterfaces()).forEach(
                 service -> {
-                    System.out.println("获取到的接口信息为:" + service.getCanonicalName());
+                    log.info("获取到的接口信息为:" + service.getCanonicalName());
                     Method[] methods = service.getMethods();
                     for (Method method : methods) {
                         if (MethodUtils.checkIfObjectMethod(method)) {
                             continue;
                         }
                         ProviderMeta providerMeta = createProviderMeta(impl, method);
-                        System.out.println(" create a provider: " + providerMeta);
+                        log.info(" create a provider: " + providerMeta);
                         skeleton.add(service.getCanonicalName(), providerMeta);
                     }
                 }

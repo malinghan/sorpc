@@ -14,11 +14,14 @@ import com.so.sorpc.core.cluster.RoundRobinLoadBalancer;
 import com.so.sorpc.core.meta.InstanceMeta;
 import com.so.sorpc.core.registry.zk.ZkRegistryCenter;
 
+import lombok.extern.slf4j.Slf4j;
+
 /**
  * @author someecho <linghan.ma@gmail.com>
  * Created on 2024-03-11
  */
 @Configuration
+@Slf4j
 public class ConsumerConfig {
 
     @Value("${sorpc.providers}")
@@ -33,9 +36,9 @@ public class ConsumerConfig {
     @Order(Integer.MIN_VALUE)
     ApplicationRunner consumerBootStrapRunner(@Autowired ConsumerBootStrap consumerBootStrap) {
         return x -> {
-            System.out.println("consumerBootStrap start...");
+            log.info("consumerBootStrap start...");
             consumerBootStrap.start();
-            System.out.println("consumerBootStrap end...");
+            log.info("consumerBootStrap end...");
         };
     }
 

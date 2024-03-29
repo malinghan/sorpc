@@ -8,10 +8,13 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import lombok.extern.slf4j.Slf4j;
+
 /**
  * @author someecho <linghan.ma@gmail.com>
  * Created on 2024-03-11
  */
+@Slf4j
 public class MethodUtils {
     public static boolean checkLocalMethod(final String method) {
         //本地方法不代理
@@ -46,7 +49,7 @@ public class MethodUtils {
         List<Field> annotatedFields = new ArrayList<>();
         //TODO
         while (beanClass != null) {
-            //            System.out.println("获取到的beanClass:" + beanClass.getCanonicalName());
+            //            log.debug("获取到的beanClass:" + beanClass.getCanonicalName());
             Field[] fields = beanClass.getDeclaredFields();
             for (Field field : fields) {
                 if(field.isAnnotationPresent(annotationClass)) {
@@ -60,6 +63,6 @@ public class MethodUtils {
 
     public static void main(String[] args) {
         Arrays.stream(MethodUtils.class.getMethods()).forEach(
-                c -> {System.out.println(MethodUtils.methodSign(c)); });
+                c -> {log.debug(MethodUtils.methodSign(c)); });
     }
 }

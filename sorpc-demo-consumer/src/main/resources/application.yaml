@@ -9,3 +9,8 @@ app:
   id: soapp1
   env: dev
   namespace: public
+
+logging:
+  level:
+    root: error
+    com.so.sorpc: debug # 这个基本改成info就不会输出debug日志

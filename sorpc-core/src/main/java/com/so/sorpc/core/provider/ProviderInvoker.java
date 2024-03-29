@@ -12,12 +12,14 @@ import com.so.sorpc.core.meta.ProviderMeta;
 import com.so.sorpc.core.utils.TypeUtils;
 
 import lombok.Data;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * @author someecho <linghan.ma@gmail.com>
  * Created on 2024-03-21
  */
 @Data
+@Slf4j
 public class ProviderInvoker {
 
     private MultiValueMap<String, ProviderMeta> skeleton;
@@ -34,14 +36,14 @@ public class ProviderInvoker {
                 .findFirst().orElse(null);
         Object bean =  meta.getServiceImpl();
         //查看是否通过反射拿到了对象  java.lang.Class
-        System.out.println("服务调用方获取到的接口信息为: "+ bean.getClass().getCanonicalName());
+        log.debug("服务调用方获取到的接口信息为: "+ bean.getClass().getCanonicalName());
         Method method = meta.getMethod();
         RpcResponse<Object> response = new RpcResponse<>();
         try {
             //provider侧反序列化处理
             Object[] args = processArgs(rpcRequest.getArgs(), method.getParameterTypes());
             result = method.invoke(bean, args);
-            System.out.println("服务调用方获取到的输出: "+ JSONObject.toJSONString(result));
+            log.debug("服务调用方获取到的输出: "+ JSONObject.toJSONString(result));
             response.setData(result);
             response.setStatus(true);
         } catch (IllegalAccessException e) {

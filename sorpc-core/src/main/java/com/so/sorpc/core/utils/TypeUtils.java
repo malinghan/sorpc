@@ -13,10 +13,13 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson2.JSON;
 
+import lombok.extern.slf4j.Slf4j;
+
 /**
  * @author someecho <linghan.ma@gmail.com>
  * Created on 2024-03-14
  */
+@Slf4j
 public class TypeUtils {
 
     public static Object cast(Object obj, Class<?> clazz) {
@@ -36,12 +39,12 @@ public class TypeUtils {
             if (Map.class.isAssignableFrom(method.getReturnType())) {
                 Map map = new HashMap<>();
                 Type genericReturnType = method.getGenericReturnType();
-                System.out.println(genericReturnType);
+                log.debug(genericReturnType.getTypeName());
                 if (genericReturnType instanceof ParameterizedType parameterizedType) {
                     Type key = parameterizedType.getActualTypeArguments()[0];
-                    System.out.println(key);
+                    log.debug(key.getTypeName());
                     Type value = parameterizedType.getActualTypeArguments()[1];
-                    System.out.println(value);
+                    log.debug(value.getTypeName());
                     jsonResult.forEach((key1, value1) -> {
                         Object objectKey = TypeUtils.cast(key1, (Class<?>) key);
                         Object objectValue = TypeUtils.cast(value1, (Class<?>) value);
@@ -55,7 +58,7 @@ public class TypeUtils {
             Object[] array = jsonArray.toArray();
             if (method.getReturnType().isArray()) {
                 Class<?> componentType = method.getReturnType().getComponentType();
-                System.out.println("获取到的componentType为: " + componentType);
+                log.debug("获取到的componentType为: " + componentType);
                 Object resultArray = Array.newInstance(componentType, array.length);
                 for (int i = 0; i < array.length; i++) {
                     Array.set(resultArray, i, array[i]);
@@ -64,10 +67,10 @@ public class TypeUtils {
             } else if (List.class.isAssignableFrom(method.getReturnType())) {
                 List<Object> res = new ArrayList<>();
                 Type genericReturnType = method.getGenericReturnType();
-                System.out.println(genericReturnType);
+                log.debug(genericReturnType.getTypeName());
                 if (genericReturnType instanceof ParameterizedType parameterizedType) {
                     Type actualType = parameterizedType.getActualTypeArguments()[0];
-                    System.out.println(actualType);
+                    log.debug(actualType.getTypeName());
                     for (Object o : array) {
                         res.add(TypeUtils.cast(o, (Class<?>) actualType));
                     }
