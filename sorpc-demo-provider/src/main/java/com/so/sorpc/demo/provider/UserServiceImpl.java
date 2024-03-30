@@ -16,6 +16,8 @@ import com.so.sorpc.core.annotation.SoRpcProvider;
 import com.so.sorpc.demo.api.User;
 import com.so.sorpc.demo.api.UserService;
 
+import lombok.Setter;
+
 /**
  * @author someecho <linghan.ma@gmail.com>
  * Created on 2024-03-07
@@ -81,8 +83,13 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Map<String, List<User>> getByUserMap(Map<String, List<User>> users) {
+    public User[] findUsers(User[] users) {
         return users;
+    }
+
+    @Override
+    public Map<String, User> getByUserMap(Map<String, User> userMap) {
+        return userMap;
     }
 
     @Override
@@ -96,6 +103,7 @@ public class UserServiceImpl implements UserService {
         return new User(100, "SO100");
     }
 
+    @Setter
     String timeoutPorts = "8081,8094";
 
     @Override
@@ -111,7 +119,4 @@ public class UserServiceImpl implements UserService {
         return new User(1001, "SO1001-" + port);
     }
 
-    public void setTimeoutPorts(String timeoutPorts) {
-        this.timeoutPorts = timeoutPorts;
-    }
 }

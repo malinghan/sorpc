@@ -96,8 +96,8 @@ public class SoInvocationHandler implements InvocationHandler {
             //反序列化为object
             Object data = rpcResponse.getData();
             //这里的类型转换很复杂
-            return TypeUtils.cast(data, method.getReturnType());
-//            return TypeUtils.castByMethod(data, method);
+//            return TypeUtils.cast(data, method.getReturnType());
+            return TypeUtils.castByMethod(data, method);
         } else {
                 Exception ex = rpcResponse.getEx();
                 if (ex instanceof RpcException e) {

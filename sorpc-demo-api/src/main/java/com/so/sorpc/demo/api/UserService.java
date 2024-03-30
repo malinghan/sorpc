@@ -29,7 +29,9 @@ public interface UserService {
 
     List<User> getByUsers(List<User> users);
 
-    Map<String, List<User>> getByUserMap(Map<String, List<User>> users);
+    User[] findUsers(User[] users);
+
+    Map<String, User> getByUserMap(Map<String, User> users);
 
     List<User> getByMap(Map<String, Integer> map);
 

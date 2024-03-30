@@ -1,8 +1,7 @@
-package com.someecho.sorpc.demo.consumer;
+package com.so.sorpc.demo.consumer;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
@@ -10,11 +9,9 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.annotation.Import;
 
 import com.alibaba.fastjson.JSONObject;
 import com.so.sorpc.core.annotation.SoRpcConsumer;
-import com.so.sorpc.core.consumer.ConsumerConfig;
 import com.so.sorpc.core.test.TestZKServer;
 import com.so.sorpc.demo.api.User;
 import com.so.sorpc.demo.api.UserService;

@@ -34,7 +34,16 @@ public class TypeUtils {
         return JSON.to(clazz, JSON.toJSONString(obj));
     }
 
+    /**
+     * case1: jsonObject
+     *     case1.1 Map
+     * @param data
+     * @param method
+     * @return
+     */
     public static Object castByMethod(Object data, Method method) {
+        Class<?> type = method.getReturnType();
+        log.debug("method.getReturnType() = " + type);
         if (data instanceof JSONObject jsonResult) {
             if (Map.class.isAssignableFrom(method.getReturnType())) {
                 Map map = new HashMap<>();
@@ -56,16 +65,21 @@ public class TypeUtils {
             return jsonResult.toJavaObject(method.getReturnType());
         } else if (data instanceof JSONArray jsonArray) {
             Object[] array = jsonArray.toArray();
-            if (method.getReturnType().isArray()) {
-                Class<?> componentType = method.getReturnType().getComponentType();
-                log.debug("获取到的componentType为: " + componentType);
+            if (type.isArray()) {
+                Class<?> componentType = type.getComponentType();
+                log.debug("receive componentType is: " + componentType);
                 Object resultArray = Array.newInstance(componentType, array.length);
                 for (int i = 0; i < array.length; i++) {
-                    Array.set(resultArray, i, array[i]);
+                    if (componentType.isPrimitive() || componentType.getPackageName().startsWith("java")) {
+                        Array.set(resultArray, i, array[i]);
+                    } else {
+                        Object castObject = cast(array[i], componentType);
+                        Array.set(resultArray, i, castObject);
+                    }
                 }
                 return resultArray;
             } else if (List.class.isAssignableFrom(method.getReturnType())) {
-                List<Object> res = new ArrayList<>();
+                List<Object> res = new ArrayList<>(array.length);
                 Type genericReturnType = method.getGenericReturnType();
                 log.debug(genericReturnType.getTypeName());
                 if (genericReturnType instanceof ParameterizedType parameterizedType) {
