@@ -9,7 +9,7 @@ app:
   id: soapp1
   env: dev
   namespace: public
-  retries: 2
+  retries: 1
   timeout: 1000
 
 logging:

@@ -11,6 +11,14 @@ Content-Type: application/json
 ### 获取用户信息1
 GET http://localhost:8088/?id=1
 
+### 故障演示,如果是指定port调用，让其timeout接口超时
+GET http://localhost:8081/ports?ports=8082,9999
+### 故障演示,如果是指定port调用，让其timeout接口超时
+GET http://localhost:8082/ports?ports=8081,9999
+
+### 故障超时
+GET http://localhost:8088/timeout?time=2000
+
 ### 获取用户信息1
 POST http://localhost:8080/
 Content-Type: application/json

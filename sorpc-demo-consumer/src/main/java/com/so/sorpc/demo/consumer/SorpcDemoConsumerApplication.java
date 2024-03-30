@@ -13,6 +13,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.alibaba.fastjson.JSONObject;
@@ -38,6 +39,11 @@ public class SorpcDemoConsumerApplication {
     @RequestMapping("/")
     public User findBy(Integer id) {
         return userService.findById(id);
+    }
+
+    @RequestMapping("/timeout")
+    public User timeout(@RequestParam("time") int time) {
+        return userService.timeout(time);
     }
 
     public static void main(String[] args) {

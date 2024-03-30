@@ -4,8 +4,13 @@ package com.so.sorpc.core.consumer;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.net.SocketTimeoutException;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
-import java.util.concurrent.Executors;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 import org.jetbrains.annotations.Nullable;
 
@@ -16,6 +21,7 @@ import com.so.sorpc.core.api.RpcResponse;
 import com.so.sorpc.core.consumer.http.HttpInvoker;
 import com.so.sorpc.core.consumer.http.OkHttpInvoker;
 import com.so.sorpc.core.exception.RpcException;
+import com.so.sorpc.core.governance.SlidingTimeWindow;
 import com.so.sorpc.core.meta.InstanceMeta;
 import com.so.sorpc.core.utils.MethodUtils;
 import com.so.sorpc.core.utils.TypeUtils;
@@ -31,8 +37,16 @@ public class SoInvocationHandler implements InvocationHandler {
 
     Class<?> service;
     RpcContext rpcContext;
-    List<InstanceMeta> providers;
+    final List<InstanceMeta> providers;
+
+    final Set<InstanceMeta> isolatedProviders = new HashSet<>();
+
+    final Set<InstanceMeta> halfOpenProviders = new HashSet<>();
+
+    final Map<String, SlidingTimeWindow> windows = new HashMap<>();
     HttpInvoker httpInvoker;
+
+    ScheduledThreadPoolExecutor executor;
 
     public SoInvocationHandler(Class<?> service, RpcContext rpcContext,
             List<InstanceMeta> providers) {
@@ -42,6 +56,15 @@ public class SoInvocationHandler implements InvocationHandler {
         int timeout = Integer.parseInt(rpcContext.getParameters()
                 .getOrDefault("app.timeout", "1000"));
         this.httpInvoker = new OkHttpInvoker(timeout);
+        executor = new ScheduledThreadPoolExecutor(1);
+        executor.scheduleWithFixedDelay(this::halfOpen, 0, 60, TimeUnit.SECONDS);
+    }
+
+    private void halfOpen() {
+        log.debug("halfOpen schedule start");
+        halfOpenProviders.clear();
+        halfOpenProviders.addAll(isolatedProviders);
+        log.debug("halfOpen schedule end");
     }
 
     @Override
@@ -66,12 +89,46 @@ public class SoInvocationHandler implements InvocationHandler {
                         return objectResult;
                     }
                 }
-                List<InstanceMeta> instanceMetas = rpcContext.getRouter().choose(providers);
-                InstanceMeta instanceMeta = rpcContext.getLoadBalancer().choose(instanceMetas);
-                log.debug(" loadBalancer.choose(instances) ==> {}", instanceMeta);
-                RpcResponse<?> rpcResponse = httpInvoker.post(rpcRequest, instanceMeta.toUrl());
 
-                Object objectResult = castMethodResponse(method, rpcResponse);
+                InstanceMeta instance;
+                RpcResponse<?> rpcResponse;
+                Object objectResult;
+                synchronized (halfOpenProviders) {
+                    if(halfOpenProviders.isEmpty()) {
+                        List<InstanceMeta> instanceMetas = rpcContext.getRouter().choose(providers);
+                        instance = rpcContext.getLoadBalancer().choose(instanceMetas);
+                        log.debug(" loadBalancer.choose(instances) ==> {}", instance);
+                    } else {
+                        instance = halfOpenProviders.stream().findFirst().orElse(null);
+                        log.debug(" halfOpen.choose(instances) ==> {}", instance);
+                    }
+                }
+                String instanceSign = instance.toUrl();
+                try {
+                    rpcResponse = httpInvoker.post(rpcRequest, instance.toUrl());
+                    objectResult = castMethodResponse(method, rpcResponse);
+                } catch (Exception e) {
+                    log.debug(" exception occur ==> {}", instance);
+                    //use sliding time window handle exception statistics
+                    //when 10 exception occur in 30s, isolate
+                    synchronized(windows) {
+                        SlidingTimeWindow window = windows.computeIfAbsent(instanceSign, k -> new SlidingTimeWindow());
+                        window.record(System.currentTimeMillis());
+                        log.debug("instance {} in window with {}", instanceSign, window.getSum());
+                        if (window.getSum() > 10) {
+                            isolate(instance);
+                        }
+                    }
+                    throw e;
+                }
+
+                synchronized (providers) {
+                    if (!providers.contains(instance)) {
+                        isolatedProviders.remove(instance);
+                        providers.add(instance);
+                        log.debug("instance {} is recovered, isolatedProviders={}, providers={}", instance, isolatedProviders, providers);
+                    }
+                }
 
                 for (Filter filter : this.rpcContext.getFilters()) {
                     Object filterResult = filter.postFilter(rpcRequest, rpcResponse, objectResult);
@@ -87,6 +144,14 @@ public class SoInvocationHandler implements InvocationHandler {
         }
     }
         return null;
+    }
+
+    private void isolate(InstanceMeta instance) {
+        log.debug(" ==> isolate instance: " + instance);
+        isolatedProviders.add(instance);
+        log.debug(" ==> providers before = {}", providers);
+        providers.remove(instance);
+        log.debug(" ==> isolatedProviders after = {}", isolatedProviders);
     }
 
     @Nullable

@@ -112,7 +112,9 @@ public class ConsumerBootStrap implements ApplicationContextAware, EnvironmentAw
             //TODO 这里简化了subscribe处理, 将providers全部刷新了一下
             registryCenter.subscribe(serviceMeta, event -> {
                     providers.clear();
-                    providers.addAll(event.getData());
+                    if(event.getData() != null) {
+                        providers.addAll(event.getData());
+                    }
              });
            return Proxy.newProxyInstance(service.getClassLoader(),
            new Class[]{service}, new SoInvocationHandler(service, rpcContext, providers));

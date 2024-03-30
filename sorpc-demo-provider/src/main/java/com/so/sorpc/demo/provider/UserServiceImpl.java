@@ -17,12 +17,14 @@ import com.so.sorpc.demo.api.User;
 import com.so.sorpc.demo.api.UserService;
 
 import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * @author someecho <linghan.ma@gmail.com>
  * Created on 2024-03-07
  */
 @Component
+@Slf4j
 @SoRpcProvider
 public class UserServiceImpl implements UserService {
 
@@ -103,13 +105,13 @@ public class UserServiceImpl implements UserService {
         return new User(100, "SO100");
     }
 
-    @Setter
-    String timeoutPorts = "8081,8094";
+    String timeoutPorts = "8099,8094";
 
     @Override
     public User timeout(int timeout) {
         String port = environment.getProperty("server.port");
         if(Arrays.asList(timeoutPorts.split(",")).contains(port)) {
+            log.debug("receive timeout");
             try {
                 Thread.sleep(timeout);
             } catch (InterruptedException e) {
@@ -117,6 +119,12 @@ public class UserServiceImpl implements UserService {
             }
         }
         return new User(1001, "SO1001-" + port);
+    }
+
+    @Override
+    public void setTimeoutPorts(String timeoutPorts) {
+        log.debug("these port is set timeout:" + timeoutPorts);
+        this.timeoutPorts = timeoutPorts;
     }
 
 }
