@@ -78,9 +78,9 @@ public class ConsumerBootStrap implements ApplicationContextAware, EnvironmentAw
 
             for (Field field : fields) {
                 log.debug(" ===> " + field.getName());
+                Class<?> service = field.getType();
+                String serviceName = service.getCanonicalName();
                 try {
-                    Class<?> service = field.getType();
-                    String serviceName = service.getCanonicalName();
                     //这就是stub.put操作
                     Object consumer = stub.get(serviceName);
                     if (consumer == null) {
@@ -90,7 +90,8 @@ public class ConsumerBootStrap implements ApplicationContextAware, EnvironmentAw
                     field.setAccessible(true);
                     field.set(bean, consumer);
                 } catch (Exception e) {
-                    throw new RpcException(e);
+                    log.warn(" ==> Field[{}.{}] create consumer failed.", serviceName, field.getName());
+                    log.error("Ignore and print it as: ", e);
                 }
 
             }
