@@ -2,6 +2,7 @@ package com.so.sorpc.core.consumer;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Proxy;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -18,6 +19,7 @@ import com.so.sorpc.core.api.LoadBalancer;
 import com.so.sorpc.core.api.RegistryCenter;
 import com.so.sorpc.core.api.Router;
 import com.so.sorpc.core.api.RpcContext;
+import com.so.sorpc.core.exception.RpcException;
 import com.so.sorpc.core.meta.InstanceMeta;
 import com.so.sorpc.core.meta.ServiceMeta;
 import com.so.sorpc.core.utils.MethodUtils;
@@ -88,7 +90,7 @@ public class ConsumerBootStrap implements ApplicationContextAware, EnvironmentAw
                     field.setAccessible(true);
                     field.set(bean, consumer);
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    throw new RpcException(e);
                 }
 
             }
@@ -105,14 +107,15 @@ public class ConsumerBootStrap implements ApplicationContextAware, EnvironmentAw
                     .name(serviceName)
                     .build();
             List<InstanceMeta> providers = registryCenter.fetchAll(serviceMeta);
+            if (providers == null || providers.isEmpty()) {
+                log.debug("no providers");
+                return null;
+            }
             log.debug(" ===> map to providers: ");
             providers.forEach(System.out::println);
-            //TODO 这里简化了subscribe处理, 将providers全部刷新了一下
             registryCenter.subscribe(serviceMeta, event -> {
                     providers.clear();
-                    if(event.getData() != null) {
-                        providers.addAll(event.getData());
-                    }
+                    providers.addAll(event.getData());
              });
            return Proxy.newProxyInstance(service.getClassLoader(),
            new Class[]{service}, new SoInvocationHandler(service, rpcContext, providers));

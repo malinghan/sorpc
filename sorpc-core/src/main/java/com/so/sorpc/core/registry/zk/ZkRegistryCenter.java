@@ -9,6 +9,7 @@ import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;
 import org.apache.curator.framework.recipes.cache.CuratorCache;
 import org.apache.curator.framework.recipes.cache.CuratorCacheListener;
+import org.apache.curator.framework.recipes.cache.TreeCache;
 import org.apache.curator.retry.ExponentialBackoffRetry;
 import org.apache.zookeeper.CreateMode;
 import org.springframework.beans.factory.annotation.Value;
@@ -39,7 +40,7 @@ public class ZkRegistryCenter implements RegistryCenter {
     @Value("${sorpc.zkRoot}")
     String root;
 
-    CuratorCache cache;
+    private List<CuratorCache> caches = new ArrayList<>();
 
     @Override
     public void start() {
@@ -57,6 +58,7 @@ public class ZkRegistryCenter implements RegistryCenter {
     @Override
     public void stop() {
         log.info(" ===> zk client stopped.");
+        caches.forEach(CuratorCache::close);
         client.close();
     }
 
@@ -102,15 +104,14 @@ public class ZkRegistryCenter implements RegistryCenter {
     public void subscribe(ServiceMeta service, ChangedListener listener) {
         CuratorCache cache = CuratorCache.builder(client, "/"+service.toPath()
                         ).build();
-        CuratorCacheListener cacheListener = CuratorCacheListener.builder()
-                        .forAll((type, oldNode, newNode) -> {
-                    // 有任何节点变动这里会执行
-                    log.info("zk subscribe event: " + type);
-                    List<InstanceMeta> nodes = fetchAll(service);
-                    listener.fire(new Event(nodes));
-                }).build();
-        cache.listenable().addListener(cacheListener);
+        cache.listenable().addListener((type, oldNode, newNode) -> {
+            // 有任何节点变动这里会执行
+            log.info("zk subscribe event: " + type);
+            List<InstanceMeta> nodes = fetchAll(service);
+            listener.fire(new Event(nodes));
+        });
         cache.start();
+        caches.add(cache);
     }
 
     @SneakyThrows
