@@ -11,6 +11,7 @@ app:
   namespace: public
   retries: 2
   timeout: 1000
+  grayRatio: 0
 
 logging:
   level:

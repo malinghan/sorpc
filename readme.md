@@ -44,3 +44,15 @@ v8.0
 
 v9.0
 - [x] 实现consumer调用部分接口异常时，进行接口级别的故障隔离，并使用异步线程半开探活恢复
+
+v10.0
+- [x] 实现灰度路由
+
+v11.0
+- [ ] 实现隐式传参
+
+v12.0
+- [ ] 制作starter，Properties统一成ConfigProperties
+
+v13.0
+- [ ] 使用netty替换socket调用

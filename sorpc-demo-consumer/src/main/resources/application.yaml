@@ -11,6 +11,8 @@ app:
   namespace: public
   retries: 1
   timeout: 1000
+#  grayRatio: 33
+#  metas: {dc: 'bj', grey: 'false', unit: 'Boo1'}
 
 logging:
   level:

@@ -1,5 +1,6 @@
 package com.so.sorpc.core.registry.zk;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -12,7 +13,10 @@ import org.apache.curator.retry.ExponentialBackoffRetry;
 import org.apache.zookeeper.CreateMode;
 import org.springframework.beans.factory.annotation.Value;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.so.sorpc.core.api.RegistryCenter;
+import com.so.sorpc.core.exception.RpcException;
 import com.so.sorpc.core.meta.InstanceMeta;
 import com.so.sorpc.core.meta.ServiceMeta;
 import com.so.sorpc.core.registry.ChangedListener;
@@ -53,7 +57,6 @@ public class ZkRegistryCenter implements RegistryCenter {
     @Override
     public void stop() {
         log.info(" ===> zk client stopped.");
-//        cache.close();
         client.close();
     }
 
@@ -64,16 +67,15 @@ public class ZkRegistryCenter implements RegistryCenter {
         //2. 注册实例
         try {
             if (client.checkExists().forPath(servicePath) == null) {
-                //持久化服务路径
-                //TODO 这里写死为service
-                client.create().withMode(CreateMode.PERSISTENT).forPath(servicePath, "service".getBytes());
+                //3. 创建持久化服务节点，将服务版本等信息也注册上去
+                client.create().withMode(CreateMode.PERSISTENT).forPath(servicePath, service.toMetas().getBytes());
             }
-            // 3. 创建实例的临时性节点
+            // 3. 创建实例的临时性节点, 将实例等信息也注册上去
             String instancePath = servicePath + "/" + instance.toPath();
             log.info(" ===> register to zk: " + instancePath);
-            client.create().withMode(CreateMode.EPHEMERAL).forPath(instancePath, "providers".getBytes());
+            client.create().withMode(CreateMode.EPHEMERAL).forPath(instancePath, instance.toMetas().getBytes());
         } catch (Exception e) {
-            e.printStackTrace();
+            throw new RpcException(e);
         }
     }
 
@@ -91,25 +93,9 @@ public class ZkRegistryCenter implements RegistryCenter {
             log.info(" ===> unregister to zk: " + instancePath);
             client.delete().quietly().forPath(instancePath);
         } catch (Exception e) {
-            e.printStackTrace();
+            throw new RpcException(e);
         }
     }
-
-//    @SneakyThrows
-//    @Override
-//    public void subscribe(String service, ChangedListener listener) {
-//        final TreeCache cache =TreeCache.newBuilder(client, "/"+service)
-//                .setCacheData(true) //Sets whether or not to cache byte data per node; default true.
-//                .setMaxDepth(2) //获取depth
-//                .build();
-//        cache.getListenable().addListener((curator, event) -> {
-//            // 有任何节点变动这里会执行
-//            log.info("zk subscribe event: " + event);
-//            List<String> nodes = fetchAll(service);
-//            listener.fire(new Event(nodes));
-//        });
-//        cache.start();
-//    }
 
     @SneakyThrows
     @Override
@@ -140,21 +126,33 @@ public class ZkRegistryCenter implements RegistryCenter {
         try {
            List<String> nodes = client.getChildren().forPath(servicePath);
             log.info(" ===> fetchAll from zk: " + servicePath);
-           nodes.forEach(System.out::println);
-           return mapInstance(nodes);
+           nodes.forEach(log::info);
+           return mapInstances(servicePath, nodes);
         } catch (Exception e) {
-            e.printStackTrace();
+            throw new RpcException(e);
         }
-        return null;
     }
 
-    private List<InstanceMeta> mapInstance(List<String> nodes)  {
+    private List<InstanceMeta> mapInstances(String servicePath, List<String> nodes)  {
         if (nodes == null || nodes.isEmpty()) {
-            return null;
+            return new ArrayList<>();
         }
         return nodes.stream().map(node -> {
-                    String[] strs = node.split("_");
-                    return InstanceMeta.http(strs[0], Integer.valueOf(strs[1]));
-                }).collect(Collectors.toList());
+            String[] strs = node.split("_");
+            //get instance meta
+            InstanceMeta instance = InstanceMeta.http(strs[0], Integer.valueOf(strs[1]));
+            try {
+                //get instance parameters
+                byte[] bytes = client.getData().forPath(servicePath + "/" + node);
+                JSONObject jsonObject = JSON.parseObject(new String(bytes));
+                jsonObject.forEach((k,v) -> {
+                    log.debug("k:{}-> v:{}", k , v);
+                    instance.getParameters().put(k,v==null  ?   null    :   v.toString());
+                });
+                return instance;
+            } catch (Exception e) {
+                throw new RpcException(e);
+            }
+        }).toList();
     }
 }

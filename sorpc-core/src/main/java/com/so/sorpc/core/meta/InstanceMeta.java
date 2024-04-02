@@ -1,6 +1,10 @@
 package com.so.sorpc.core.meta;
 
+import java.util.HashMap;
 import java.util.Map;
+
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -19,7 +23,7 @@ public class InstanceMeta {
     private Integer port;
     private String context; //实例信息
     private Integer status; //实例状态
-    private Map<String, String> parameters; //实例相关参数
+    private Map<String, String> parameters  = new HashMap<>();  // idc  A B C; //实例相关参数
 
     public InstanceMeta(String scheme, String host, Integer port, String context) {
         this.scheme = scheme;
@@ -34,6 +38,15 @@ public class InstanceMeta {
 
     public String toUrl() {
         return String.format("%s://%s:%d/%s",scheme, host, port, context);
+    }
+
+    public String toMetas() {
+        return JSON.toJSONString(this.parameters);
+    }
+
+    public InstanceMeta addParams(Map<String, String> params) {
+        this.getParameters().putAll(params);
+        return this;
     }
 
     public static InstanceMeta http(String host, Integer port) {

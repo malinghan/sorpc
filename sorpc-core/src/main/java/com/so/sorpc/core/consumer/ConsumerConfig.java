@@ -7,13 +7,11 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
 
-import com.so.sorpc.core.api.Filter;
 import com.so.sorpc.core.api.LoadBalancer;
 import com.so.sorpc.core.api.RegistryCenter;
 import com.so.sorpc.core.api.Router;
+import com.so.sorpc.core.cluster.GrayRouter;
 import com.so.sorpc.core.cluster.RoundRobinLoadBalancer;
-import com.so.sorpc.core.filter.CacheFilter;
-import com.so.sorpc.core.filter.MockFilter;
 import com.so.sorpc.core.meta.InstanceMeta;
 import com.so.sorpc.core.registry.zk.ZkRegistryCenter;
 
@@ -29,6 +27,10 @@ public class ConsumerConfig {
 
     @Value("${sorpc.providers}")
     String servers;
+
+
+    @Value("${app.grayRatio:0}")
+    private int grayRatio;
 
     @Bean
     ConsumerBootStrap getConsumerBootStrap() {
@@ -53,13 +55,12 @@ public class ConsumerConfig {
 
     @Bean
     public Router<InstanceMeta> router() {
-        return Router.Default;
+        return new GrayRouter(grayRatio);
     }
 
     @Bean(initMethod = "start", destroyMethod = "stop")
     public RegistryCenter consumerRegistryCenter() {
         return new ZkRegistryCenter();
-       // return new RegistryCenter.StaticRegistryCenter(List.of(servers.split(",")));
     }
 
 //    @Bean
