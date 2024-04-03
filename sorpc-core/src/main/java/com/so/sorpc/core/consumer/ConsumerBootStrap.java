@@ -2,7 +2,6 @@ package com.so.sorpc.core.consumer;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Proxy;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -19,7 +18,6 @@ import com.so.sorpc.core.api.LoadBalancer;
 import com.so.sorpc.core.api.RegistryCenter;
 import com.so.sorpc.core.api.Router;
 import com.so.sorpc.core.api.RpcContext;
-import com.so.sorpc.core.exception.RpcException;
 import com.so.sorpc.core.meta.InstanceMeta;
 import com.so.sorpc.core.meta.ServiceMeta;
 import com.so.sorpc.core.utils.MethodUtils;
