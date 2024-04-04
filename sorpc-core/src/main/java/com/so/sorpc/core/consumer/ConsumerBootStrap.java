@@ -91,9 +91,7 @@ public class ConsumerBootStrap implements ApplicationContextAware, EnvironmentAw
                     log.warn(" ==> Field[{}.{}] create consumer failed.", serviceName, field.getName());
                     log.error("Ignore and print it as: ", e);
                 }
-
             }
-
         }
     }
 
