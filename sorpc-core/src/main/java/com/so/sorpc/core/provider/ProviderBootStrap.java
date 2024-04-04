@@ -5,7 +5,6 @@ import java.net.InetAddress;
 import java.util.Arrays;
 import java.util.Map;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.util.LinkedMultiValueMap;
@@ -33,28 +32,22 @@ import lombok.extern.slf4j.Slf4j;
 public class ProviderBootStrap implements ApplicationContextAware {
 
     ApplicationContext applicationContext;
-
     RegistryCenter rc;
-
     private MultiValueMap<String, ProviderMeta> skeleton = new LinkedMultiValueMap<>();   //获取到的服务接口存根
-
-    private InstanceMeta instance;
-
-    @Value("${server.port}")
-    private int port;
-
-    @Value("${app.id}")
+    private String port;
     private String app;
-
-    @Value("${app.namespace}")
     private String namespace;
-
-    @Value("${app.env}")
     private String env;
-
-    @Value("#{${app.metas}}")
-    Map<String, String> metas; //instance meta parameters {"grey": false, "dc":"bj","unit":"B001"}
-
+    private Map<String, String> metas;
+    private InstanceMeta instance;
+    public ProviderBootStrap(String port, String app, String namespace,
+            String env, Map<String, String> metas) {
+        this.port = port;
+        this.app = app;
+        this.namespace = namespace;
+        this.env = env;
+        this.metas = metas;
+    }
 
     @PostConstruct
     public void buildProviders() {
@@ -71,7 +64,7 @@ public class ProviderBootStrap implements ApplicationContextAware {
         rc.start();
         String ip = InetAddress.getLocalHost().getHostAddress();
         log.info("metas:{}", metas);
-        instance = InstanceMeta.http(ip, port).addParams(this.metas);
+        instance = InstanceMeta.http(ip, Integer.valueOf(port)).addParams(this.metas);
         skeleton.keySet().forEach(this::registerService);
     }
 

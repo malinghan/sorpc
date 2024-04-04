@@ -22,6 +22,10 @@ public class RpcContext {
 
     private Map<String, String> parameters = new HashMap<>();
 
+    public String param(String key) {
+        return parameters.get(key);
+    }
+
     public static ThreadLocal<Map<String, String>> contextParameters = new ThreadLocal<>() {
         @Override
         protected Map<String, String> initialValue() {

@@ -49,10 +49,10 @@ v10.0
 - [x] 实现灰度路由
 
 v11.0
-- [ ] 实现隐式传参
+- [X] 实现隐式传参
 
 v12.0
 - [ ] 制作starter，Properties统一成ConfigProperties
-
+- [ ] 传输层抽象 
 v13.0
 - [ ] 使用netty替换socket调用

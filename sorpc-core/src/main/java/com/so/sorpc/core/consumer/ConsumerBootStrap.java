@@ -6,17 +6,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.EnvironmentAware;
 import org.springframework.core.env.Environment;
 
 import com.so.sorpc.core.annotation.SoRpcConsumer;
-import com.so.sorpc.core.api.Filter;
-import com.so.sorpc.core.api.LoadBalancer;
 import com.so.sorpc.core.api.RegistryCenter;
-import com.so.sorpc.core.api.Router;
 import com.so.sorpc.core.api.RpcContext;
 import com.so.sorpc.core.meta.InstanceMeta;
 import com.so.sorpc.core.meta.ServiceMeta;
@@ -37,36 +33,17 @@ public class ConsumerBootStrap implements ApplicationContextAware, EnvironmentAw
 
     Environment environment;
 
-    @Value("${app.id}")
     private String app;
-
-    @Value("${app.namespace}")
     private String namespace;
-
-    @Value("${app.env}")
     private String env;
-
-    @Value("${app.retries}")
     private int retries;
-
-    @Value("${app.timeout}")
     private int timeout;
 
     private Map<String, Object> stub = new HashMap<>();   //获取到客户端接口调用存根
 
     public void start() {
-        Router<InstanceMeta> router = applicationContext.getBean(Router.class);
-        LoadBalancer<InstanceMeta> loadBalancer = applicationContext.getBean(LoadBalancer.class);
         RegistryCenter rc = applicationContext.getBean(RegistryCenter.class);
-        List<Filter> filters = applicationContext.getBeansOfType(Filter.class).values().stream().toList();
-
-        RpcContext context = new RpcContext();
-        context.setRouter(router);
-        context.setLoadBalancer(loadBalancer);
-        context.setFilters(filters);
-        context.getParameters().put("app.retries", String.valueOf(retries)); //设置post invoke重试次数
-        context.getParameters().put("app.timeout", String.valueOf(timeout)); //设置httpClient超时时间
-
+        RpcContext context = applicationContext.getBean(RpcContext.class);
 
         String[] names = applicationContext.getBeanDefinitionNames();
         for (String name : names) {
@@ -98,9 +75,9 @@ public class ConsumerBootStrap implements ApplicationContextAware, EnvironmentAw
     private Object creatConsumerFromRc(Class<?> service,RpcContext rpcContext, RegistryCenter registryCenter) {
              String serviceName = service.getCanonicalName();
             ServiceMeta serviceMeta = ServiceMeta.builder()
-                    .app(app)
-                    .env(env)
-                    .namespace(namespace)
+                    .app(rpcContext.param("app.id"))
+                    .env(rpcContext.param("app.env"))
+                    .namespace(rpcContext.param("app.namespace"))
                     .name(serviceName)
                     .build();
             List<InstanceMeta> providers = registryCenter.fetchAll(serviceMeta);

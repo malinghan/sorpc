@@ -15,6 +15,7 @@ import com.so.sorpc.core.api.RpcRequest;
 import com.so.sorpc.core.api.RpcResponse;
 import com.so.sorpc.core.provider.ProviderInvoker;
 import com.so.sorpc.core.provider.ProviderConfig;
+import com.so.sorpc.core.transport.SpringBootTransport;
 import com.so.sorpc.demo.api.UserService;
 
 import lombok.extern.slf4j.Slf4j;
@@ -30,15 +31,10 @@ public class SorpcDemoProviderApplication {
     }
 
     @Autowired
-    ProviderInvoker providerInvoker;
+    SpringBootTransport transport;
 
     @Autowired
     UserService userService;
-
-    @RequestMapping("/")
-    RpcResponse<Object> invoke(@RequestBody  RpcRequest request) {
-       return providerInvoker.invoke(request);
-    }
 
     @RequestMapping("/ports")
     public RpcResponse<String> ports(@RequestParam("ports") String ports) {
@@ -58,61 +54,51 @@ public class SorpcDemoProviderApplication {
        return x ->  {
            RpcRequest rpcRequest = new RpcRequest();
            //com.so.sorpc.demo.api.UserService
-//           log.info("测试UserService.findById(Integer)");
-//           rpcRequest.setService("com.so.sorpc.demo.api.UserService");
-//           rpcRequest.setMethodSign("findById@1_java.lang.Integer");
-//           rpcRequest.setArgs(new Object[]{100});
-//
-//           RpcResponse rpcResponse = invoke(rpcRequest);
-//
-//           log.info("return: " + rpcResponse.getData());
-//
-//           //com.so.sorpc.demo.api.UserService
-//           log.info("测试UserService.findById(int)");
-//           rpcRequest.setService("com.so.sorpc.demo.api.UserService");
-//           rpcRequest.setMethodSign("findById@1_int");
-//           rpcRequest.setArgs(new Object[]{100});
-//
-//           RpcResponse rpcResponse01 = invoke(rpcRequest);
-//
-//           log.info("return: " + rpcResponse01.getData());
-//
-//           //com.so.sorpc.demo.api.UserService
-//           log.info("测试UserService.findById(String)");
-//           rpcRequest.setService("com.so.sorpc.demo.api.UserService");
-//           rpcRequest.setMethodSign("findById@1_java.lang.String");
-//           rpcRequest.setArgs(new Object[]{"hello"});
-//
-//           RpcResponse rpcResponse1 = invoke(rpcRequest);
-//
-//           log.info("return: " + rpcResponse1.getData());
-//
-//           //com.so.sorpc.demo.api.UserService
-//           log.info("测试UserService.findById(long)");
-//           rpcRequest.setService("com.so.sorpc.demo.api.UserService");
-//           rpcRequest.setMethodSign("findById@1_long");
-//           rpcRequest.setArgs(new Object[]{1L});
-//
-//           RpcResponse rpcResponse2 = invoke(rpcRequest);
-//           log.info("return: " + rpcResponse2.getData());
-//
-//           //com.so.sorpc.demo.api.UserService
-//           log.info("测试UserService.findById(Double)");
-//           rpcRequest.setService("com.so.sorpc.demo.api.UserService");
-//           rpcRequest.setMethodSign("findById@1_java.lang.Double");
-//           rpcRequest.setArgs(new Object[]{1D});
-//
-//           RpcResponse rpcResponse3 = invoke(rpcRequest);
-//           log.info("return: " + rpcResponse3.getData());
-
-           //返回值测试
-           log.info("测试UserService.getLongIds(Double)");
+           log.info("case 1: 测试UserService.findById(Integer)==[基本测试：1个参数 Integer]==");
            rpcRequest.setService("com.so.sorpc.demo.api.UserService");
-           rpcRequest.setMethodSign("getLongIds@0");
-           rpcRequest.setArgs(new Object[]{});
+           rpcRequest.setMethodSign("findById@1_java.lang.Integer");
+           rpcRequest.setArgs(new Object[]{100});
 
-           RpcResponse<Object> rpcResponse4 = invoke(rpcRequest);
-           log.info("return: " + rpcResponse4.toString());
+           RpcResponse rpcResponse = transport.invoke(rpcRequest);
+
+           log.info("return: " + rpcResponse.getData());
+
+           //com.so.sorpc.demo.api.UserService
+           log.info("case 2: 测试UserService.findById(int)==[基本测试：1个参数 int]==");
+           rpcRequest.setService("com.so.sorpc.demo.api.UserService");
+           rpcRequest.setMethodSign("findById@1_int");
+           rpcRequest.setArgs(new Object[]{100});
+
+           RpcResponse rpcResponse01 = transport.invoke(rpcRequest);
+
+           log.info("return: " + rpcResponse01.getData());
+
+           //com.so.sorpc.demo.api.UserService
+           log.info("case 3: 测试UserService.findById(String)==[基本测试：1个参数 String]==");
+           rpcRequest.setService("com.so.sorpc.demo.api.UserService");
+           rpcRequest.setMethodSign("findById@1_java.lang.String");
+           rpcRequest.setArgs(new Object[]{"hello"});
+
+           RpcResponse rpcResponse1 = transport.invoke(rpcRequest);
+
+           log.info("return: " + rpcResponse1.getData());
+
+           //com.so.sorpc.demo.api.UserService
+           log.info("case 4: 测试UserService.findById(long)==[基本测试：1个参数 long]==");
+           rpcRequest.setService("com.so.sorpc.demo.api.UserService");
+           rpcRequest.setMethodSign("findById@1_long");
+           rpcRequest.setArgs(new Object[]{1L});
+
+           RpcResponse rpcResponse2 = transport.invoke(rpcRequest);
+           log.info("return: " + rpcResponse2.getData());
+
+           //com.so.sorpc.demo.api.UserService
+           log.info("case 5: 测试UserService.findById(Double)==[基本测试：1个参数 Double]==");
+           rpcRequest.setService("com.so.sorpc.demo.api.UserService");
+           rpcRequest.setMethodSign("findById@1_java.lang.Double");
+           rpcRequest.setArgs(new Object[]{1D});
+           RpcResponse rpcResponse3 = transport.invoke(rpcRequest);
+           log.info("return: " + rpcResponse3.getData());
        };
     }
 
