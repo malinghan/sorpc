@@ -45,7 +45,7 @@ class SorpcDemoConsumerApplicationTests {
         System.out.println(" ====================================== ");
         context1 = SpringApplication.run(SorpcDemoProviderApplication.class,
                 "--server.port=8094", "--sorpc.zkServer=localhost:2182",
-                "--logging.level.com.so.sorpc=info");
+                "--logging.level.com.so.sorpc=info", "--app.metas={dc:'bj',gray:'false',unit:'B001'}");
         System.out.println(" ====================================== ");
         System.out.println(" ====================================== ");
         System.out.println(" =============      P8095    ========== ");
@@ -53,7 +53,7 @@ class SorpcDemoConsumerApplicationTests {
         System.out.println(" ====================================== ");
         context2 = SpringApplication.run(SorpcDemoProviderApplication.class,
                 "--server.port=8095", "--sorpc.zkServer=localhost:2182",
-                "--logging.level.com.so.sorpc=info");
+                "--logging.level.com.so.sorpc=info", "--app.metas={dc:'bj',gray:'false',unit:'B001'}");
     }
 
     @Test
