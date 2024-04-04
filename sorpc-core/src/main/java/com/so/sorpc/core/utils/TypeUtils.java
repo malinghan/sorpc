@@ -34,37 +34,42 @@ public class TypeUtils {
         return JSON.to(clazz, JSON.toJSONString(obj));
     }
 
-    /**
-     * case1: jsonObject
-     *     case1.1 Map
-     * @param data
-     * @param method
-     * @return
-     */
-    public static Object castByMethod(Object data, Method method) {
-        Class<?> type = method.getReturnType();
-        log.debug("method.getReturnType() = " + type);
-        if (data instanceof JSONObject jsonResult) {
-            if (Map.class.isAssignableFrom(method.getReturnType())) {
-                Map map = new HashMap<>();
-                Type genericReturnType = method.getGenericReturnType();
+    public static Object castGeneric(Object data, Class<?> type, Type genericReturnType) {
+        log.debug("castGeneric: data = " + data);
+        log.debug("castGeneric: method.getReturnType() = " + type);
+        log.debug("castGeneric: method.getGenericReturnType() = " + genericReturnType);
+        //data instanceof Map map ===> JSONObject
+        //JSONArray
+        if (data instanceof  Map map) {
+            if (Map.class.isAssignableFrom(type)) {
+                // 目标类型是 Map，此时data可能是map也可能是JO
+                log.debug(" ======> map -> map");
+                Map resultMap = new HashMap<>();
                 log.debug(genericReturnType.getTypeName());
                 if (genericReturnType instanceof ParameterizedType parameterizedType) {
                     Type key = parameterizedType.getActualTypeArguments()[0];
                     log.debug(key.getTypeName());
                     Type value = parameterizedType.getActualTypeArguments()[1];
                     log.debug(value.getTypeName());
-                    jsonResult.forEach((key1, value1) -> {
+                    map.forEach((key1, value1) -> {
                         Object objectKey = TypeUtils.cast(key1, (Class<?>) key);
                         Object objectValue = TypeUtils.cast(value1, (Class<?>) value);
-                        map.put(objectKey, objectValue);
+                        resultMap.put(objectKey, objectValue);
                     });
                 }
-                return  map;
+                return resultMap;
+            } else if(data instanceof JSONObject jsonObject) {// 此时是Pojo，且数据是JO
+                log.debug(" ======> JSONObject -> Pojo");
+                return jsonObject.toJavaObject(type);
+            }else if(!Map.class.isAssignableFrom(type)){ // 此时是Pojo类型，数据是Map
+                log.debug(" ======> map -> Pojo");
+                return new JSONObject(map).toJavaObject(type);
+            }else {
+                log.debug(" ======> map -> ?");
+                return data;
             }
-            return jsonResult.toJavaObject(method.getReturnType());
-        } else if (data instanceof JSONArray jsonArray) {
-            Object[] array = jsonArray.toArray();
+        } else if (data instanceof List list) {
+            Object[] array = list.toArray();
             if (type.isArray()) {
                 Class<?> componentType = type.getComponentType();
                 log.debug("receive componentType is: " + componentType);
@@ -78,9 +83,8 @@ public class TypeUtils {
                     }
                 }
                 return resultArray;
-            } else if (List.class.isAssignableFrom(method.getReturnType())) {
+            } else if (List.class.isAssignableFrom(type)) {
                 List<Object> res = new ArrayList<>(array.length);
-                Type genericReturnType = method.getGenericReturnType();
                 log.debug(genericReturnType.getTypeName());
                 if (genericReturnType instanceof ParameterizedType parameterizedType) {
                     Type actualType = parameterizedType.getActualTypeArguments()[0];
@@ -96,8 +100,23 @@ public class TypeUtils {
                 return null;
             }
         } else {
-            return TypeUtils.cast(data, method.getReturnType());
+            return TypeUtils.cast(data, type);
         }
+    }
+
+    /**
+     * case1: jsonObject
+     *     case1.1 Map
+     * @param data
+     * @param method
+     * @return
+     */
+    public static Object castByMethod(Object data, Method method) {
+        log.debug("castMethodResult: method = " + method);
+        log.debug("castMethodResult: data = " + data);
+        Class<?> type = method.getReturnType();
+        Type genericReturnType = method.getGenericReturnType();
+        return castGeneric(data, type, genericReturnType);
     }
 
     public static Object cast1(Object origin,  Class<?> targetType) {

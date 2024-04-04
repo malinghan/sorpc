@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.alibaba.fastjson.JSONObject;
 import com.so.sorpc.core.annotation.SoRpcConsumer;
+import com.so.sorpc.core.api.RpcContext;
 import com.so.sorpc.core.cluster.GrayRouter;
 import com.so.sorpc.core.consumer.ConsumerConfig;
 import com.so.sorpc.demo.api.User;
@@ -150,5 +151,19 @@ public class SorpcDemoConsumerApplication {
         userService.timeout(1100);
         log.info("userService.find take "
                 + (System.currentTimeMillis()-start) + " ms");
+
+
+        System.out.println("Case 14. >>===[测试通过Context跨消费者和提供者进行传参]===");
+        String Key_Version = "rpc.version";
+        String Key_Message = "rpc.message";
+        RpcContext.setContextParameters(Key_Version, "v8");
+        RpcContext.setContextParameters(Key_Message, "this is a test message");
+        String version = userService.echoParameter(Key_Version);
+        RpcContext.setContextParameters(Key_Version, "v8");
+        RpcContext.setContextParameters(Key_Message, "this is a test message");
+        String message = userService.echoParameter(Key_Message);
+        System.out.println(" ===> echo parameter from c->p->c: " + Key_Version + " -> " + version);
+        System.out.println(" ===> echo parameter from c->p->c: " + Key_Message + " -> " + message);
+        RpcContext.contextParameters.get().clear();
     }
 }

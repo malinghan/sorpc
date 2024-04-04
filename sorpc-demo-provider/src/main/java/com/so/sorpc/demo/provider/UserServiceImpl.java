@@ -1,22 +1,19 @@
 package com.so.sorpc.demo.provider;
 
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
 import com.so.sorpc.core.annotation.SoRpcProvider;
+import com.so.sorpc.core.api.RpcContext;
 import com.so.sorpc.demo.api.User;
 import com.so.sorpc.demo.api.UserService;
 
-import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -125,6 +122,13 @@ public class UserServiceImpl implements UserService {
     public void setTimeoutPorts(String timeoutPorts) {
         log.debug("these port is set timeout:" + timeoutPorts);
         this.timeoutPorts = timeoutPorts;
+    }
+
+    @Override
+    public String echoParameter(String key) {
+        System.out.println(" ====>> RpcContext.ContextParameters: ");
+        RpcContext.contextParameters.get().forEach((k,v)-> System.out.println(k+" -> " +v));
+        return RpcContext.getContextParameters(key);
     }
 
 }

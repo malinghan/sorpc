@@ -7,11 +7,14 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
 
+import com.so.sorpc.core.api.Filter;
 import com.so.sorpc.core.api.LoadBalancer;
 import com.so.sorpc.core.api.RegistryCenter;
 import com.so.sorpc.core.api.Router;
 import com.so.sorpc.core.cluster.GrayRouter;
 import com.so.sorpc.core.cluster.RoundRobinLoadBalancer;
+import com.so.sorpc.core.filter.ContextParameterFilter;
+import com.so.sorpc.core.filter.MockFilter;
 import com.so.sorpc.core.meta.InstanceMeta;
 import com.so.sorpc.core.registry.zk.ZkRegistryCenter;
 
@@ -72,4 +75,11 @@ public class ConsumerConfig {
 //    public Filter filter() {
 //        return new MockFilter();
 //    }
+
+    @Bean
+    public Filter filter() {
+        return new ContextParameterFilter();
+    }
+
+
 }

@@ -6,6 +6,7 @@ import java.util.List;
 
 import org.springframework.util.MultiValueMap;
 import com.alibaba.fastjson.JSONObject;
+import com.so.sorpc.core.api.RpcContext;
 import com.so.sorpc.core.api.RpcRequest;
 import com.so.sorpc.core.api.RpcResponse;
 import com.so.sorpc.core.exception.RpcException;
@@ -30,6 +31,11 @@ public class ProviderInvoker {
     }
 
     public RpcResponse<Object> invoke(RpcRequest rpcRequest) {
+        log.debug(" ===> ProviderInvoker.invoke(request:{})", rpcRequest);
+        //put contextParameters into request
+        if (!rpcRequest.getParams().isEmpty()) {
+            rpcRequest.getParams().forEach(RpcContext::setContextParameters);
+        }
         List<ProviderMeta> providerMetas = skeleton.get(rpcRequest.getService());
         Object result = null;
         ProviderMeta meta =  providerMetas.stream()
@@ -51,7 +57,10 @@ public class ProviderInvoker {
             response.setEx(new RpcException(e.getMessage()));
         } catch (InvocationTargetException e) {
             response.setEx(new RpcException(e.getTargetException().getMessage()));
+        } finally {
+            RpcContext.contextParameters.get().clear();
         }
+        log.debug(" ===> ProviderInvoker.invoke(response:{})", response);
         return response;
     }
 
