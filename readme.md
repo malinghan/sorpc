@@ -52,7 +52,9 @@ v11.0
 - [X] 实现隐式传参
 
 v12.0
-- [ ] 制作starter，Properties统一成ConfigProperties
-- [ ] 传输层抽象 
+- [ ] Properties统一成ConfigProperties
+- [ ] 制作starter
+- [ ] 传输层抽象 SpringBootTransport
+- [x] 自定义扫描包路径+`@SoRpcProvider`注解优化
 v13.0
 - [ ] 使用netty替换socket调用
