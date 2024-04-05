@@ -4,6 +4,7 @@ import com.so.sorpc.core.api.RpcRequest;
 import com.so.sorpc.core.api.RpcResponse;
 
 /**
+ * interface for http invoker
  * @author someecho <linghan.ma@gmail.com>
  * Created on 2024-03-21
  */

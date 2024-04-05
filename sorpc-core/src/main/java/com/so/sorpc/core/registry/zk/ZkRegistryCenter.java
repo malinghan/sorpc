@@ -34,15 +34,14 @@ import lombok.extern.slf4j.Slf4j;
 public class ZkRegistryCenter implements RegistryCenter {
     private CuratorFramework client = null;
 
-    @Value("${sorpc.zkServer}")
+    @Value("${sorpc.zk.server:localhost:2181}")
     String servers;
 
-    @Value("${sorpc.zkRoot}")
+    @Value("${sorpc.zk.root:sorpc}")
     String root;
 
-//    private List<CuratorCache> caches = new ArrayList<>();
-
-    private List<TreeCache> caches = new ArrayList<>();
+    private List<CuratorCache> caches = new ArrayList<>();
+//    private List<TreeCache> caches = new ArrayList<>();
 
     @Override
     public void start() {
@@ -60,8 +59,8 @@ public class ZkRegistryCenter implements RegistryCenter {
     @Override
     public void stop() {
         log.info(" ===> zk tree cache closed.");
-//        caches.forEach(CuratorCache::close);
-        caches.forEach(TreeCache::close);
+        caches.forEach(CuratorCache::close);
+//        caches.forEach(TreeCache::close);
         log.info(" ===> zk client stopped.");
         client.close();
     }
@@ -103,37 +102,37 @@ public class ZkRegistryCenter implements RegistryCenter {
         }
     }
 
-//    @SneakyThrows
-//    @Override
-//    public void subscribe(ServiceMeta service, ChangedListener listener) {
-//        CuratorCache cache = CuratorCache.builder(client, "/"+service.toPath()
-//                        ).build();
-//        cache.listenable().addListener((type, oldNode, newNode) -> {
-//            // 有任何节点变动这里会执行
-//            log.info("zk subscribe event: " + type);
-//            List<InstanceMeta> nodes = fetchAll(service);
-//            listener.fire(new Event(nodes));
-//        });
-//        cache.start();
-//        caches.add(cache);
-//    }
-
     @SneakyThrows
     @Override
     public void subscribe(ServiceMeta service, ChangedListener listener) {
-        final TreeCache cache = TreeCache.newBuilder(client, "/"+service.toPath())
-                .setCacheData(true).setMaxDepth(2).build();
-        cache.getListenable().addListener(
-                (curator, event) -> {
-                    // 有任何节点变动这里会执行
-                    log.info("zk subscribe event: " + event);
-                    List<InstanceMeta> nodes = fetchAll(service);
-                    listener.fire(new Event(nodes));
-                }
-        );
+        CuratorCache cache = CuratorCache.builder(client, "/"+service.toPath()
+                        ).build();
+        cache.listenable().addListener((type, oldNode, newNode) -> {
+            // 有任何节点变动这里会执行
+            log.info("zk subscribe event: " + type);
+            List<InstanceMeta> nodes = fetchAll(service);
+            listener.fire(new Event(nodes));
+        });
         cache.start();
         caches.add(cache);
     }
+
+//    @SneakyThrows
+//    @Override
+//    public void subscribe(ServiceMeta service, ChangedListener listener) {
+//        final TreeCache cache = TreeCache.newBuilder(client, "/"+service.toPath())
+//                .setCacheData(true).setMaxDepth(2).build();
+//        cache.getListenable().addListener(
+//                (curator, event) -> {
+//                    // 有任何节点变动这里会执行
+//                    log.info("zk subscribe event: " + event);
+//                    List<InstanceMeta> nodes = fetchAll(service);
+//                    listener.fire(new Event(nodes));
+//                }
+//        );
+//        cache.start();
+//        caches.add(cache);
+//    }
 
     @SneakyThrows
     @Override

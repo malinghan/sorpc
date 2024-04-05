@@ -1,6 +1,4 @@
-package com.so.sorpc.core.provider;
-
-import java.util.Map;
+package com.so.sorpc.core.config;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -12,38 +10,35 @@ import org.springframework.context.annotation.Import;
 import org.springframework.core.annotation.Order;
 
 import com.so.sorpc.core.api.RegistryCenter;
+import com.so.sorpc.core.provider.ProviderBootStrap;
+import com.so.sorpc.core.provider.ProviderInvoker;
 import com.so.sorpc.core.registry.zk.ZkRegistryCenter;
 import com.so.sorpc.core.transport.SpringBootTransport;
 
 import lombok.extern.slf4j.Slf4j;
 
 /**
+ * default config for provider
  * @author someecho <linghan.ma@gmail.com>
  * Created on 2024-03-07
  */
 @Configuration
 @Slf4j
-@Import({SpringBootTransport.class})
+@Import({AppConfigProperties.class, ProviderConfigProperties.class, SpringBootTransport.class})
 public class ProviderConfig {
 
     @Value("${server.port:8081}")
     private String port;
 
-    @Value("${app.id:app1}")
-    private String app;
+    @Autowired
+    AppConfigProperties appConfigProperties;
 
-    @Value("${app.namespace:public}")
-    private String namespace;
-
-    @Value("${app.env:dev}")
-    private String env;
-
-    @Value("#{${app.metas:{dc:'bj',gray:'false',unit:'B001'}}}")  //Spel
-    Map<String, String> metas;
+    @Autowired
+    ProviderConfigProperties providerConfigProperties;
 
     @Bean
     ProviderBootStrap providerBootstrap() {
-        return new ProviderBootStrap(port, app, namespace, env, metas);
+        return new ProviderBootStrap(port, appConfigProperties, providerConfigProperties);
     }
 
     @Bean

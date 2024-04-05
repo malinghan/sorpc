@@ -1,6 +1,7 @@
 package com.so.sorpc.demo.provider;
 
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -78,7 +79,11 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public List<User> getByUsers(List<User> users) {
-        return users;
+        users.add(new User(11, "aa"));
+        User[] usersArray = users.toArray(new User[0]);
+        log.info("=====userArray");
+        Arrays.stream(usersArray).forEach(x -> log.info("user:{}",x));
+        return Arrays.stream(usersArray).toList();
     }
 
     @Override
@@ -88,6 +93,11 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Map<String, User> getByUserMap(Map<String, User> userMap) {
+        userMap.values().forEach(x -> System.out.println(x.getClass()));
+        User[] users = userMap.values().toArray(new User[0]);
+        System.out.println(" ==> userMap.values().toArray()[] = ");
+        Arrays.stream(users).forEach(System.out::println);
+        userMap.put("A2024", new User(2024,"22024"));
         return userMap;
     }
 

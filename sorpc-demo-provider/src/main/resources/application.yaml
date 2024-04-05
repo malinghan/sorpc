@@ -1,17 +1,18 @@
 server:
   port: 8081
 sorpc:
-  zkServer: localhost:2181
-  zkRoot: sorpc
-
-
-app:
-  id: soapp1
-  env: dev
-  namespace: public
-  metas: "{dc: 'bj', gray: 'false', unit: 'B001'}"
-  grayRatio: 33
-
+  zk:
+    server: localhost:2181
+    root: sorpc
+  app:
+    id: soapp1
+    env: dev
+    namespace: public
+  provider:
+    metas:
+      dc: bj
+      gray: false
+      unit: B001
 logging:
   level:
     root: error

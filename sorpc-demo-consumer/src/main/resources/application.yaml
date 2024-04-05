@@ -1,18 +1,21 @@
 server:
   port: 8088
 sorpc:
-  providers: http://localhost:8081,http://localhost:8082,http://localhost:8083
-  zkServer: localhost:2181
-  zkRoot: sorpc
-
-app:
-  id: soapp1
-  env: dev
-  namespace: public
-  retries: 1
-  timeout: 1000
-#  grayRatio: 33
-#  metas: {dc: 'bj', grey: 'false', unit: 'Boo1'}
+ # providers: http://localhost:8081,http://localhost:8082,http://localhost:8083
+  zk:
+    server: localhost:2181
+    root: sorpc
+  app:
+    id: soapp1
+    env: dev
+    namespace: public
+  consumer:
+    retries: 1
+    timeout: 1000
+    grayRatio: 33 #0-100
+    faultLimit: 10 # 30s 内10次错误则隔离
+    halfOpenInitialDelay: 10000
+    halfOpenDelay: 60000
 
 logging:
   level:

@@ -6,15 +6,13 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.so.sorpc.core.api.RpcRequest;
 import com.so.sorpc.core.api.RpcResponse;
-import com.so.sorpc.core.provider.ProviderInvoker;
-import com.so.sorpc.core.provider.ProviderConfig;
+import com.so.sorpc.core.config.ProviderConfig;
 import com.so.sorpc.core.transport.SpringBootTransport;
 import com.so.sorpc.demo.api.UserService;
 

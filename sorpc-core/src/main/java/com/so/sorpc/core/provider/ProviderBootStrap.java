@@ -12,6 +12,8 @@ import org.springframework.util.MultiValueMap;
 
 import com.so.sorpc.core.annotation.SoRpcProvider;
 import com.so.sorpc.core.api.RegistryCenter;
+import com.so.sorpc.core.config.AppConfigProperties;
+import com.so.sorpc.core.config.ProviderConfigProperties;
 import com.so.sorpc.core.meta.InstanceMeta;
 import com.so.sorpc.core.meta.ProviderMeta;
 import com.so.sorpc.core.meta.ServiceMeta;
@@ -35,18 +37,15 @@ public class ProviderBootStrap implements ApplicationContextAware {
     RegistryCenter rc;
     private MultiValueMap<String, ProviderMeta> skeleton = new LinkedMultiValueMap<>();   //获取到的服务接口存根
     private String port;
-    private String app;
-    private String namespace;
-    private String env;
-    private Map<String, String> metas;
+    private AppConfigProperties appProperties;
+    private ProviderConfigProperties providerProperties;
     private InstanceMeta instance;
-    public ProviderBootStrap(String port, String app, String namespace,
-            String env, Map<String, String> metas) {
+
+    public ProviderBootStrap(String port, AppConfigProperties appProperties,
+            ProviderConfigProperties providerProperties) {
         this.port = port;
-        this.app = app;
-        this.namespace = namespace;
-        this.env = env;
-        this.metas = metas;
+        this.appProperties = appProperties;
+        this.providerProperties = providerProperties;
     }
 
     @PostConstruct
@@ -63,16 +62,16 @@ public class ProviderBootStrap implements ApplicationContextAware {
     public void start() {
         rc.start();
         String ip = InetAddress.getLocalHost().getHostAddress();
-        log.info("metas:{}", metas);
-        instance = InstanceMeta.http(ip, Integer.valueOf(port)).addParams(this.metas);
+        log.info("metas:{}", providerProperties.getMetas());
+        instance = InstanceMeta.http(ip, Integer.valueOf(port)).addParams(providerProperties.getMetas());
         skeleton.keySet().forEach(this::registerService);
     }
 
     public void registerService(String service) {
         ServiceMeta serviceMeta = ServiceMeta.builder()
-                .app(app)
-                .env(env)
-                .namespace(namespace)
+                .app(appProperties.getId())
+                .env(appProperties.getEnv())
+                .namespace(appProperties.getNamespace())
                 .name(service)
                 .build();
         rc.register(serviceMeta, instance);
@@ -86,9 +85,9 @@ public class ProviderBootStrap implements ApplicationContextAware {
 
     public void unregisterService(String service) {
         ServiceMeta serviceMeta = ServiceMeta.builder()
-                .app(app)
-                .env(env)
-                .namespace(namespace)
+                .app(appProperties.getId())
+                .env(appProperties.getEnv())
+                .namespace(appProperties.getNamespace())
                 .name(service)
                 .build();
         rc.unregister(serviceMeta, instance);

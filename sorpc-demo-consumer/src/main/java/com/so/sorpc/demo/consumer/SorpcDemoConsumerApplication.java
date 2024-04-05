@@ -20,7 +20,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.so.sorpc.core.annotation.SoRpcConsumer;
 import com.so.sorpc.core.api.RpcContext;
 import com.so.sorpc.core.cluster.GrayRouter;
-import com.so.sorpc.core.consumer.ConsumerConfig;
+import com.so.sorpc.core.config.ConsumerConfig;
 import com.so.sorpc.demo.api.User;
 import com.so.sorpc.demo.api.UserService;
 

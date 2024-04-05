@@ -54,10 +54,14 @@ public class SoInvocationHandler implements InvocationHandler {
         this.rpcContext = rpcContext;
         this.providers = providers;
         int timeout = Integer.parseInt(rpcContext.getParameters()
-                .getOrDefault("app.timeout", "1000"));
+                .getOrDefault("consumer.timeout", "1000"));
         this.httpInvoker = new OkHttpInvoker(timeout);
+        int halfOpenInitialDelay = Integer.parseInt(rpcContext.getParameters()
+                .getOrDefault("consumer.halfOpenInitialDelay", "10000"));
+        int halfOpenDelay = Integer.parseInt(rpcContext.getParameters()
+                .getOrDefault("consumer.halfOpenDelay", "60000"));
         executor = new ScheduledThreadPoolExecutor(1);
-        executor.scheduleWithFixedDelay(this::halfOpen, 0, 60, TimeUnit.SECONDS);
+        executor.scheduleWithFixedDelay(this::halfOpen, halfOpenInitialDelay, halfOpenDelay, TimeUnit.MILLISECONDS);
     }
 
     private void halfOpen() {
@@ -77,7 +81,9 @@ public class SoInvocationHandler implements InvocationHandler {
         rpcRequest.setMethodSign(MethodUtils.methodSign(method));
         rpcRequest.setArgs(args);
         //retries handler
-        int retries = Integer.parseInt(rpcContext.getParameters().getOrDefault("app.retries", "1"));
+        int retries = Integer.parseInt(rpcContext.getParameters().getOrDefault("consumer.retries", "1"));
+        int faultLimit = Integer.parseInt(rpcContext.getParameters().getOrDefault("consumer.faultLimit", "10"));
+
         //if SocketTimeoutException occur, retry, else return
         while (retries-- > 0) {
             log.debug(" ===> reties: " + retries);
@@ -115,7 +121,7 @@ public class SoInvocationHandler implements InvocationHandler {
                         SlidingTimeWindow window = windows.computeIfAbsent(instanceSign, k -> new SlidingTimeWindow());
                         window.record(System.currentTimeMillis());
                         log.debug("instance {} in window with {}", instanceSign, window.getSum());
-                        if (window.getSum() > 10) {
+                        if (window.getSum() > faultLimit) {
                             isolate(instance);
                         }
                     }
@@ -164,11 +170,13 @@ public class SoInvocationHandler implements InvocationHandler {
 //            return TypeUtils.cast(data, method.getReturnType());
             return TypeUtils.castByMethod(data, method);
         } else {
-                Exception ex = rpcResponse.getEx();
-                if (ex instanceof RpcException e) {
-                    throw e;
+                RpcException ex = rpcResponse.getEx();
+                if (ex != null) {
+                    log.error("response error,", ex);
+                    throw ex;
                 }
-                throw new RpcException(ex, RpcException.UnknownEx);
+                return null;
+
         }
     }
 }
