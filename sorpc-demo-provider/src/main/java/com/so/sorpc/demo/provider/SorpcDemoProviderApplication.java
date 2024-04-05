@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.so.sorpc.core.annotation.SoRpcScan;
 import com.so.sorpc.core.api.RpcRequest;
 import com.so.sorpc.core.api.RpcResponse;
 import com.so.sorpc.core.config.ProviderConfig;
@@ -22,6 +23,7 @@ import lombok.extern.slf4j.Slf4j;
 @Import({ProviderConfig.class})
 @RestController
 @Slf4j
+@SoRpcScan(basePackage = {"com.so.sorpc"})
 public class SorpcDemoProviderApplication {
 
     public static void main(String[] args) {

@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.alibaba.fastjson.JSONObject;
 import com.so.sorpc.core.annotation.SoRpcConsumer;
+import com.so.sorpc.core.annotation.SoRpcScan;
 import com.so.sorpc.core.api.RpcContext;
 import com.so.sorpc.core.cluster.GrayRouter;
 import com.so.sorpc.core.config.ConsumerConfig;
@@ -30,6 +31,7 @@ import lombok.extern.slf4j.Slf4j;
 @RestController
 @Import({ConsumerConfig.class})
 @Slf4j
+@SoRpcScan(basePackage = {"com.so.sorpc"})
 public class SorpcDemoConsumerApplication {
 
     @SoRpcConsumer
