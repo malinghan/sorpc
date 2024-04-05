@@ -10,7 +10,7 @@ import com.so.sorpc.demo.api.OrderService;
  * @author someecho <linghan.ma@gmail.com>
  * Created on 2024-03-07
  */
-@Component
+//@Component
 @SoRpcProvider
 public class OrderServiceImpl implements OrderService {
     @Override

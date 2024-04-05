@@ -15,11 +15,13 @@ import com.so.sorpc.core.annotation.SoRpcScan;
 import lombok.extern.slf4j.Slf4j;
 
 /**
+ * @link https://blog.csdn.net/qq920447939/article/details/104874757
  * @author someecho <linghan.ma@gmail.com>
+ * @see org.springframework.context.annotation.ComponentScan
  * Created on 2024-04-06
  */
 @Slf4j
-public class CustomScannerRegistry implements ImportBeanDefinitionRegistrar, ResourceLoaderAware {
+public class CustomScannerRegistrar implements ImportBeanDefinitionRegistrar, ResourceLoaderAware {
     private static final String SPRING_BEAN_BASE_PACKAGE = "com.so.sorpc";
     private static final String BASE_PACKAGE_ATTRIBUTE_NAME = "basePackage";
     private ResourceLoader resourceLoader;
@@ -48,14 +50,14 @@ public class CustomScannerRegistry implements ImportBeanDefinitionRegistrar, Res
         CustomScanner rpcServiceScanner = new CustomScanner(beanDefinitionRegistry, SoRpcProvider.class);
         // Scan the Component annotation
         CustomScanner springBeanScanner = new CustomScanner(beanDefinitionRegistry, Component.class);
+        //resourceLoader
         if (resourceLoader != null) {
             rpcServiceScanner.setResourceLoader(resourceLoader);
             springBeanScanner.setResourceLoader(resourceLoader);
         }
         int springBeanAmount = springBeanScanner.scan(SPRING_BEAN_BASE_PACKAGE);
-        log.info("springBeanScanner扫描的数量 [{}]", springBeanAmount);
+        log.info("springBeanScanner scan amount [{}]", springBeanAmount);
         int rpcServiceCount = rpcServiceScanner.scan(rpcScanBasePackages);
-        log.info("rpcServiceScanner扫描的数量 [{}]", rpcServiceCount);
-
+        log.info("rpcServiceScanner scan amount [{}]", rpcServiceCount);
     }
 }

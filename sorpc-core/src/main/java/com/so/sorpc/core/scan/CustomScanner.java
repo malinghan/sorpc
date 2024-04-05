@@ -13,23 +13,6 @@ import org.springframework.core.type.filter.AnnotationTypeFilter;
  * Created on 2024-04-06
  */
 public class CustomScanner extends ClassPathBeanDefinitionScanner {
-    public CustomScanner(BeanDefinitionRegistry registry) {
-        super(registry);
-    }
-
-    public CustomScanner(BeanDefinitionRegistry registry, boolean useDefaultFilters) {
-        super(registry, useDefaultFilters);
-    }
-
-    public CustomScanner(BeanDefinitionRegistry registry, boolean useDefaultFilters,
-            Environment environment) {
-        super(registry, useDefaultFilters, environment);
-    }
-
-    public CustomScanner(BeanDefinitionRegistry registry, boolean useDefaultFilters,
-            Environment environment, ResourceLoader resourceLoader) {
-        super(registry, useDefaultFilters, environment, resourceLoader);
-    }
 
     public CustomScanner(BeanDefinitionRegistry registry, Class<? extends Annotation> annoType) {
         super(registry);

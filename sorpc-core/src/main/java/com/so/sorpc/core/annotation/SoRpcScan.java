@@ -8,7 +8,7 @@ import java.lang.annotation.Target;
 
 import org.springframework.context.annotation.Import;
 
-import com.so.sorpc.core.scan.CustomScannerRegistry;
+import com.so.sorpc.core.scan.CustomScannerRegistrar;
 
 /**
  * @author someecho <linghan.ma@gmail.com>
@@ -16,7 +16,7 @@ import com.so.sorpc.core.scan.CustomScannerRegistry;
  */
 @Target({ElementType.TYPE, ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
-@Import(CustomScannerRegistry.class)
+@Import(CustomScannerRegistrar.class)
 @Documented
 public @interface SoRpcScan {
     String[] basePackage();

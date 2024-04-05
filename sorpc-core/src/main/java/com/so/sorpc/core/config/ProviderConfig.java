@@ -24,7 +24,8 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Configuration
 @Slf4j
-@Import({AppConfigProperties.class, ProviderConfigProperties.class, SpringBootTransport.class})
+//@Import({AppConfigProperties.class, ProviderConfigProperties.class, SpringBootTransport.class})
+@Import({AppConfigProperties.class, ProviderConfigProperties.class})
 public class ProviderConfig {
 
     @Value("${server.port:8081}")

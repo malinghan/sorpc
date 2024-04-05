@@ -21,7 +21,7 @@ import lombok.extern.slf4j.Slf4j;
  * @author someecho <linghan.ma@gmail.com>
  * Created on 2024-03-07
  */
-@Component
+//@Component
 @Slf4j
 @SoRpcProvider
 public class UserServiceImpl implements UserService {
