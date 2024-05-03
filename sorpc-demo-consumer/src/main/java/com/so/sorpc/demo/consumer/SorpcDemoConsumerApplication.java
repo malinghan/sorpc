@@ -32,7 +32,7 @@ import lombok.extern.slf4j.Slf4j;
 @Import({ConsumerConfig.class})
 @Slf4j
 @SoRpcScan(basePackage = {"com.so.sorpc"})
-public class SorpcDemoConsumerApplication {
+public class SorpcDemoConsumerApplication { 
 
     @SoRpcConsumer
     private UserService userService;

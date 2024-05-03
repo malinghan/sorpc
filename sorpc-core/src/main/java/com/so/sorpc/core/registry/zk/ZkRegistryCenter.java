@@ -40,7 +40,7 @@ public class ZkRegistryCenter implements RegistryCenter {
     @Value("${sorpc.zk.root:sorpc}")
     String root;
 
-    private List<CuratorCache> caches = new ArrayList<>();
+    private final List<CuratorCache> caches = new ArrayList<>();
 //    private List<TreeCache> caches = new ArrayList<>();
 
     @Override
@@ -95,7 +95,7 @@ public class ZkRegistryCenter implements RegistryCenter {
             }
             // 3. 创建实例的临时性节点
             String instancePath = servicePath + "/" + instance.toPath();
-            log.info(" ===> unregister to zk: " + instancePath);
+            log.info(" ===> unregister to zk: {}", instancePath);
             client.delete().quietly().forPath(instancePath);
         } catch (Exception e) {
             throw new RpcException(e);
@@ -109,7 +109,7 @@ public class ZkRegistryCenter implements RegistryCenter {
                         ).build();
         cache.listenable().addListener((type, oldNode, newNode) -> {
             // 有任何节点变动这里会执行
-            log.info("zk subscribe event: " + type);
+            log.info("zk subscribe event: {}", type);
             List<InstanceMeta> nodes = fetchAll(service);
             listener.fire(new Event(nodes));
         });
@@ -146,7 +146,7 @@ public class ZkRegistryCenter implements RegistryCenter {
         String servicePath = "/" + service.toPath();
         try {
            List<String> nodes = client.getChildren().forPath(servicePath);
-            log.info(" ===> fetchAll from zk: " + servicePath);
+            log.info(" ===> fetchAll from zk: {}", servicePath);
            nodes.forEach(log::info);
            return mapInstances(servicePath, nodes);
         } catch (Exception e) {
