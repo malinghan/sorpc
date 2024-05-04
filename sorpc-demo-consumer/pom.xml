@@ -3,9 +3,9 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <groupId>com.so</groupId>
+        <groupId>io.github.malinghan</groupId>
         <artifactId>sorpc</artifactId>
-        <version>0.0.1-SNAPSHOT</version>
+        <version>${sorpc.version}</version>
     </parent>
     <artifactId>sorpc-demo-consumer</artifactId>
     <version>0.0.1-SNAPSHOT</version>
@@ -29,19 +29,19 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>com.so</groupId>
+            <groupId>io.github.malinghan</groupId>
             <artifactId>sorpc-core</artifactId>
-            <version>0.0.1-SNAPSHOT</version>
+            <version>${sorpc.version}</version>
         </dependency>
         <dependency>
-            <groupId>com.so</groupId>
+            <groupId>io.github.malinghan</groupId>
             <artifactId>sorpc-demo-api</artifactId>
-            <version>0.0.1-SNAPSHOT</version>
+            <version>${sorpc.version}</version>
         </dependency>
         <dependency>
-            <groupId>com.so</groupId>
+            <groupId>io.github.malinghan</groupId>
             <artifactId>sorpc-demo-provider</artifactId>
-            <version>0.0.1-SNAPSHOT</version>
+            <version>${sorpc.version}</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
