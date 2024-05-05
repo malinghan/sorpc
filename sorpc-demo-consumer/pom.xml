@@ -8,7 +8,7 @@
         <version>${sorpc.version}</version>
     </parent>
     <artifactId>sorpc-demo-consumer</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>${sorpc.version}</version>
     <name>sorpc-demo-consumer</name>
     <description>sorpc-demo-consumer</description>
 
@@ -52,6 +52,7 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <configuration>
+<!--                <classifier>boot</classifier>-->
                     <excludes>
                         <exclude>
                             <groupId>org.projectlombok</groupId>

@@ -52,13 +52,21 @@ v11.0
 - [X] 实现隐式传参
 
 v12.0
-- [ ] Properties统一成ConfigProperties
-
-- [ ] 传输层抽象 SpringBootTransport
+- [x] Properties统一成ConfigProperties
+- [x] 传输层抽象 SpringBootTransport
+- [x] 实现将jar包发布到maven中央仓库
+- [x] 实现父子pom的版本统一维护
+- [x] 实现provider端的流量控制
 
 v13.0
+- [ ] 集成apollo配置中心
 - [ ] 使用netty替换socket调用
 
 feature
 - [x] 自定义扫描包路径+`@SoRpcProvider`注解优化 => 已整合到v12.0
 - [ ] 制作starter
+- [ ] 使用group和version管理service
+
+# todo
+- 滑动时间窗口算法是如何运作的？
+- 将v12.0中的流控抽象，可以适配滑动窗口和令牌桶算法？

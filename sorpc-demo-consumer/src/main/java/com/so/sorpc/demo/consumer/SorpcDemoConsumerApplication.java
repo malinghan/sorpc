@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.alibaba.fastjson.JSONObject;
 import com.so.sorpc.core.annotation.SoRpcConsumer;
 import com.so.sorpc.core.annotation.SoRpcScan;
+import com.so.sorpc.core.api.Router;
 import com.so.sorpc.core.api.RpcContext;
 import com.so.sorpc.core.cluster.GrayRouter;
 import com.so.sorpc.core.config.ConsumerConfig;
@@ -40,8 +41,13 @@ public class SorpcDemoConsumerApplication {
     @Autowired
     ApplicationContext context;
 
-    @RequestMapping("/")
-    public User findBy(Integer id) {
+//    @RequestMapping("/")
+//    public User findBy(Integer id) {
+//        return userService.findById(id);
+//    }
+
+    @RequestMapping("/api/")
+    public User findBy(@RequestParam("id") Integer id) {
         return userService.findById(id);
     }
 
@@ -50,15 +56,13 @@ public class SorpcDemoConsumerApplication {
         return userService.timeout(time);
     }
 
+    @Autowired
+    Router router;
+
     @RequestMapping("/grey")
     public String grey(@RequestParam("ratio") int ratio) {
-        GrayRouter grayRouter = context.getBean(GrayRouter.class);
-        if (grayRouter == null) {
-            return "No grayRouter config";
-        }
-        int old = grayRouter.getGrayRatio();
-        grayRouter.setGrayRatio(ratio);
-        return "old grayRatio is " + old + ", now grayRatio is " + ratio;
+        ((GrayRouter)router).setGrayRatio(ratio);
+        return "new grayRatio is " + ratio;
     }
 
 

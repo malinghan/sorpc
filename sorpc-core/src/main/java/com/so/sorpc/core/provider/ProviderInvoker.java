@@ -1,15 +1,21 @@
 package com.so.sorpc.core.provider;
 
+import static com.so.sorpc.core.exception.RpcException.ExceedLimitEx;
+
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.util.MultiValueMap;
 import com.alibaba.fastjson.JSONObject;
 import com.so.sorpc.core.api.RpcContext;
 import com.so.sorpc.core.api.RpcRequest;
 import com.so.sorpc.core.api.RpcResponse;
+import com.so.sorpc.core.config.ProviderConfigProperties;
 import com.so.sorpc.core.exception.RpcException;
+import com.so.sorpc.core.governance.SlidingTimeWindow;
 import com.so.sorpc.core.meta.ProviderMeta;
 import com.so.sorpc.core.utils.TypeUtils;
 
@@ -26,8 +32,13 @@ public class ProviderInvoker {
 
     private MultiValueMap<String, ProviderMeta> skeleton;
 
+    //服务端流控滑动窗口
+    final Map<String, SlidingTimeWindow> windows = new HashMap<>();
+    final ProviderConfigProperties providerConfigProperties;
+
     public ProviderInvoker(ProviderBootStrap providerBootStrap) {
         this.skeleton = providerBootStrap.getSkeleton();
+        this.providerConfigProperties = providerBootStrap.getProviderProperties();
     }
 
     public RpcResponse<Object> invoke(RpcRequest rpcRequest) {
@@ -36,6 +47,26 @@ public class ProviderInvoker {
         if (!rpcRequest.getParams().isEmpty()) {
             rpcRequest.getParams().forEach(RpcContext::setContextParameters);
         }
+        RpcResponse<Object> response = new RpcResponse<>();
+        String service = rpcRequest.getService();
+        //define traffic control for every service
+        int trafficControl = Integer.parseInt(providerConfigProperties.getMetas().getOrDefault("tc", "20"));
+        log.debug(" ===> trafficControl: {} for {}", trafficControl, service);
+
+        synchronized (windows) {
+            SlidingTimeWindow window = windows.computeIfAbsent(service, k -> new SlidingTimeWindow());
+            if (window.calcSum() > trafficControl) {
+                log.debug("windows:{}", windows);
+                throw new RpcException(
+                        "service" + service + " invoke in 30s/[" + window.getSum() + " ] larger than tpsLimit = "
+                                + trafficControl, ExceedLimitEx);
+            }
+            //traffic control record
+            window.record(System.currentTimeMillis());
+            log.debug("service {} in window with {}", service, window.getSum());
+        }
+
+
         List<ProviderMeta> providerMetas = skeleton.get(rpcRequest.getService());
         Object result = null;
         ProviderMeta meta =  providerMetas.stream()
@@ -45,7 +76,7 @@ public class ProviderInvoker {
         //查看是否通过反射拿到了对象  java.lang.Class
         log.debug("provider get bean class: "+ bean.getClass().getCanonicalName());
         Method method = meta.getMethod();
-        RpcResponse<Object> response = new RpcResponse<>();
+
         try {
             //provider侧反序列化处理
             Object[] args = processArgs(rpcRequest.getArgs(), method.getParameterTypes());

@@ -79,4 +79,45 @@ public class SlidingTimeWindow {
         this.ringBuffer.incr(0, 1);
     }
 
+    public int getSize() {
+        return size;
+    }
+
+    public int getSum() {
+        return sum;
+    }
+
+    public int calcSum() {
+        long ts = System.currentTimeMillis() / 1000;
+        if(ts > _curr_ts && ts < _curr_ts + size) {
+            int offset = (int)(ts - _curr_ts);
+            log.debug("calc sum for window ts:" + ts + ", curr_ts:" + _curr_ts + ", size:" + size + ", offset:" + offset);
+            this.ringBuffer.reset(_curr_mark + 1, offset);
+            _curr_ts = ts;
+            _curr_mark = (_curr_mark + offset) % size;
+        } else if(ts >= _curr_ts + size) {
+            log.debug("calc sum for window ts:" + ts + ", curr_ts:" + _curr_ts + ", size:" + size);
+            this.ringBuffer.reset();
+            initRing(ts);
+        }
+        log.debug("calc sum for window:" + this);
+        return ringBuffer.sum();
+    }
+
+    public RingBuffer getRingBuffer() {
+        return ringBuffer;
+    }
+
+    public int get_curr_mark() {
+        return _curr_mark;
+    }
+
+    public long get_start_ts() {
+        return _start_ts;
+    }
+
+    public long get_curr_ts() {
+        return _curr_ts;
+    }
+
 }

@@ -2,6 +2,7 @@ package com.so.sorpc.core.registry.zk;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.apache.curator.RetryPolicy;
@@ -162,18 +163,20 @@ public class ZkRegistryCenter implements RegistryCenter {
             String[] strs = node.split("_");
             //get instance meta
             InstanceMeta instance = InstanceMeta.http(strs[0], Integer.valueOf(strs[1]));
+            String nodePath = servicePath + "/" + node;
+            byte[] bytes;
             try {
                 //get instance parameters
-                byte[] bytes = client.getData().forPath(servicePath + "/" + node);
-                JSONObject jsonObject = JSON.parseObject(new String(bytes));
-                jsonObject.forEach((k,v) -> {
-                    log.debug("k:{}-> v:{}", k , v);
-                    instance.getParameters().put(k,v==null  ?   null    :   v.toString());
-                });
-                return instance;
+                bytes = client.getData().forPath(nodePath);
             } catch (Exception e) {
-                throw new RpcException(e);
+                throw new RuntimeException(e);
             }
+            Map<String, Object> params = JSON.parseObject(new String(bytes));
+            params.forEach((k,v) -> {
+                log.debug("k:{}-> v:{}", k , v);
+                instance.getParameters().put(k,v==null  ?   null    :   v.toString());
+            });
+            return instance;
         }).collect(Collectors.toList());
     }
 }

@@ -4,7 +4,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>io.github.malinghan</groupId>
   <artifactId>sorpc-core</artifactId>
-  <version>0.0.2</version>
+  <version>0.0.3</version>
   <name>sorpc-core</name>
   <description>sorpc</description>
   <url>https://github.com/malinghan/sorpc/sorpc-core</url>
@@ -31,16 +31,6 @@
     <system>github</system>
     <url>https://github.com/malinghan/sorpc/issues</url>
   </issueManagement>
-  <distributionManagement>
-    <repository>
-      <id>ossrh</id>
-      <url>https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/</url>
-    </repository>
-    <snapshotRepository>
-      <id>ossrh</id>
-      <url>https://s01.oss.sonatype.org/content/repositories/snapshots</url>
-    </snapshotRepository>
-  </distributionManagement>
   <dependencies>
     <dependency>
       <groupId>org.springframework.boot</groupId>

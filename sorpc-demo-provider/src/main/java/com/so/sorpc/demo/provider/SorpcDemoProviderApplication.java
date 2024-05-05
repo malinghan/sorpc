@@ -14,6 +14,7 @@ import com.so.sorpc.core.annotation.SoRpcScan;
 import com.so.sorpc.core.api.RpcRequest;
 import com.so.sorpc.core.api.RpcResponse;
 import com.so.sorpc.core.config.ProviderConfig;
+import com.so.sorpc.core.exception.RpcException;
 import com.so.sorpc.core.transport.SpringBootTransport;
 import com.so.sorpc.demo.api.UserService;
 
@@ -99,6 +100,21 @@ public class SorpcDemoProviderApplication {
            rpcRequest.setArgs(new Object[]{1D});
            RpcResponse rpcResponse3 = transport.invoke(rpcRequest);
            log.info("return: " + rpcResponse3.getData());
+
+//           log.info("case 6: 测试流量并发控制==");
+//           for (int i = 0; i < 100; i++) {
+//               try {
+//                   Thread.sleep(1000);
+//                   RpcResponse<Object> r = transport.invoke(rpcRequest);
+//                   System.out.println(i + " ***>>> " +r.getData());
+//               } catch (RpcException e) {
+//                   // ignore
+//                   log.info(i + " ***>>> " +e.getMessage() + " -> " + e.getErrorcode());
+//               } catch (InterruptedException e) {
+//                   throw new RuntimeException(e);
+//               }
+//           }
+//           log.info("return: " + rpcResponse3.getData());
        };
     }
 

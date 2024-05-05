@@ -44,4 +44,5 @@ public class RpcException extends RuntimeException {
     public static final String SocketTimeoutEx = "X001" + "-" + "http_invoke_timeout";
     public static final String NoSuchMethodEx  = "X002" + "-" + "method_not_exists";
     public static final String UnknownEx  = "Z001" + "-" + "unknown";
+    public static final String ExceedLimitEx  = "X003" + "-" + "tps_exceed_limit";
 }
