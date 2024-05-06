@@ -11,7 +11,7 @@ import lombok.Data;
  * Created on 2024-04-05
  */
 @Data
-@Configuration
+//@Configuration
 @ConfigurationProperties(prefix = "sorpc.consumer")
 public class ConsumerConfigProperties {
 

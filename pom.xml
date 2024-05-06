@@ -50,6 +50,8 @@
 
         <argline>-server -Xms256m -Xmx512m -Dfile.encoding=UTF-8 -Djava.net.preferIPv4Stack=true -XX:MetaspaceSize=64m -XX:MaxMetaspaceSize=128m</argline>
         <jacoco.skip>true</jacoco.skip>
+
+        <apollo.version>2.2.0</apollo.version>
     </properties>
 
     <dependencyManagement>

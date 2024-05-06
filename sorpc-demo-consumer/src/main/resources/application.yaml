@@ -21,3 +21,16 @@ logging:
   level:
     root: error
     com.so.sorpc: debug # 这个基本改成info就不会输出debug日志
+
+apollo:
+  autoUpdateInjectedSpringProperties: true
+  bootstrap:
+    eagerLoad:
+      enabled: false
+    enabled: true
+    namespaces: app1
+  cacheDir: /opt/data/
+  cluster: default
+  meta: http://localhost:8080
+app:
+  id: soapp1

@@ -11,15 +11,19 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.ApplicationContext;
 
 import com.alibaba.fastjson.JSONObject;
+import com.ctrip.framework.apollo.mockserver.ApolloTestingServer;
 import com.so.sorpc.core.annotation.SoRpcConsumer;
 import com.so.sorpc.core.test.TestZKServer;
 import com.so.sorpc.demo.api.User;
 import com.so.sorpc.demo.api.UserService;
 import com.so.sorpc.demo.provider.SorpcDemoProviderApplication;
 
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 
 @SpringBootTest(classes = {SorpcDemoConsumerApplication.class})
+//@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT,
+//        properties = {"kkregistry.servers=http://localhost:8894/registry", "kkrpc.app.env=test"})
 @Slf4j
 class SorpcDemoConsumerApplicationTests {
     static ApplicationContext context1;
@@ -30,6 +34,9 @@ class SorpcDemoConsumerApplicationTests {
 
     static TestZKServer zkServer = new TestZKServer();
 
+    static ApolloTestingServer apollo = new ApolloTestingServer();
+
+    @SneakyThrows
     @BeforeAll
     static void init() {
         System.out.println(" ====================================== ");
@@ -38,6 +45,12 @@ class SorpcDemoConsumerApplicationTests {
         System.out.println(" ====================================== ");
         System.out.println(" ====================================== ");
         zkServer.start();
+//        System.out.println(" ====================================== ");
+//        System.out.println(" ====================================== ");
+//        System.out.println(" ===========     mock apollo    ======= ");
+//        System.out.println(" ====================================== ");
+//        System.out.println(" ====================================== ");
+//        apollo.start();
         System.out.println(" ====================================== ");
         System.out.println(" ====================================== ");
         System.out.println(" =============      P8094    ========== ");
@@ -76,6 +89,9 @@ class SorpcDemoConsumerApplicationTests {
         SpringApplication.exit(context1, () -> 1);
         SpringApplication.exit(context2, () -> 1);
         zkServer.stop();
+//        System.out.println(" ===========     stop apollo mockserver   ======= ");
+//        apollo.close();
+//        System.out.println(" ===========     destroy in after all     ======= ");
     }
 
     private void testAll() {

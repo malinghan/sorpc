@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
@@ -13,7 +14,6 @@ import com.so.sorpc.core.api.RegistryCenter;
 import com.so.sorpc.core.provider.ProviderBootStrap;
 import com.so.sorpc.core.provider.ProviderInvoker;
 import com.so.sorpc.core.registry.zk.ZkRegistryCenter;
-import com.so.sorpc.core.transport.SpringBootTransport;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -61,5 +61,12 @@ public class ProviderConfig {
     @ConditionalOnMissingBean //default zk
     public RegistryCenter providerRegistryCenter() {
         return new ZkRegistryCenter();
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    @ConditionalOnProperty(prefix = "apollo.bootstrap", value = "enabled")
+    ApolloChangedListener provider_apolloChangedListener() {
+        return new ApolloChangedListener();
     }
 }

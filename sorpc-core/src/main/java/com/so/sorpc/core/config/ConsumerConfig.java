@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -69,6 +70,13 @@ public class ConsumerConfig {
     @Bean
     public Router<InstanceMeta> router() {
         return new GrayRouter(consumerConfigProperties.getGrayRatio());
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    @ConditionalOnProperty(prefix = "apollo.bootstrap", value = "enabled")
+    ApolloChangedListener consumer_apolloChangedListener() {
+        return new ApolloChangedListener();
     }
 
     @Bean(initMethod = "start", destroyMethod = "stop")

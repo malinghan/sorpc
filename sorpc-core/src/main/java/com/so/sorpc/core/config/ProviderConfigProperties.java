@@ -14,8 +14,15 @@ import lombok.Data;
  * Created on 2024-04-05
  */
 @Data
-@Configuration
+//@Configuration
 @ConfigurationProperties(prefix = "sorpc.provider")
 public class ProviderConfigProperties {
-    Map<String, String> metas = new HashMap<>();;
+    Map<String, String> metas = new HashMap<>();
+
+    //test config center
+    String test;
+
+    public void setTest(String test) {
+        this.test = test;
+    }
 }

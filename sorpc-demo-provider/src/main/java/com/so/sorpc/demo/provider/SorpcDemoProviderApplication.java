@@ -13,7 +13,9 @@ import org.springframework.web.bind.annotation.RestController;
 import com.so.sorpc.core.annotation.SoRpcScan;
 import com.so.sorpc.core.api.RpcRequest;
 import com.so.sorpc.core.api.RpcResponse;
+import com.so.sorpc.core.config.ApolloChangedListener;
 import com.so.sorpc.core.config.ProviderConfig;
+import com.so.sorpc.core.config.ProviderConfigProperties;
 import com.so.sorpc.core.exception.RpcException;
 import com.so.sorpc.core.transport.SpringBootTransport;
 import com.so.sorpc.demo.api.UserService;
@@ -31,11 +33,27 @@ public class SorpcDemoProviderApplication {
         SpringApplication.run(SorpcDemoProviderApplication.class, args);
     }
 
+    //is it usefull?
+    @Bean
+    ApolloChangedListener apolloChangedListener() {
+        return new ApolloChangedListener();
+    }
+
     @Autowired
     SpringBootTransport transport;
 
     @Autowired
     UserService userService;
+
+    @Autowired
+    ProviderConfigProperties providerProperties;
+
+    @RequestMapping("/metas")
+    public String meta() {
+        //observe metas object hashcode
+        System.out.println(System.identityHashCode(providerProperties.getMetas()));
+        return providerProperties.getMetas().toString();
+    }
 
     @RequestMapping("/ports")
     public RpcResponse<String> ports(@RequestParam("ports") String ports) {

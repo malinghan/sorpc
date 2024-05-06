@@ -39,3 +39,6 @@ Content-Type: application/json
   "methodSign": "findById@1_java.lang.Long",
   "args": [100]
 }
+
+### 通过8081调用配置项
+GET http://localhost:8081/metas
