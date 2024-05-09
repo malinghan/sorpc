@@ -14,6 +14,8 @@ sorpc:
       gray: false
       unit: B001
       tc: 20
+soregistry:
+  servers: http://localhost:8484
 logging:
   level:
     root: error

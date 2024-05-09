@@ -9,14 +9,11 @@ import org.apache.curator.RetryPolicy;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;
 import org.apache.curator.framework.recipes.cache.CuratorCache;
-import org.apache.curator.framework.recipes.cache.CuratorCacheListener;
-import org.apache.curator.framework.recipes.cache.TreeCache;
 import org.apache.curator.retry.ExponentialBackoffRetry;
 import org.apache.zookeeper.CreateMode;
 import org.springframework.beans.factory.annotation.Value;
 
 import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
 import com.so.sorpc.core.api.RegistryCenter;
 import com.so.sorpc.core.exception.RpcException;
 import com.so.sorpc.core.meta.InstanceMeta;
@@ -134,12 +131,6 @@ public class ZkRegistryCenter implements RegistryCenter {
 //        cache.start();
 //        caches.add(cache);
 //    }
-
-    @SneakyThrows
-    @Override
-    public void unsubscribe(ServiceMeta service, ChangedListener listener) {
-        //TODO
-    }
 
     @Override
     public List<InstanceMeta> fetchAll(ServiceMeta service) {

@@ -13,6 +13,7 @@ import org.springframework.core.annotation.Order;
 import com.so.sorpc.core.api.RegistryCenter;
 import com.so.sorpc.core.provider.ProviderBootStrap;
 import com.so.sorpc.core.provider.ProviderInvoker;
+import com.so.sorpc.core.registry.so.SoRegistryCenter;
 import com.so.sorpc.core.registry.zk.ZkRegistryCenter;
 
 import lombok.extern.slf4j.Slf4j;
@@ -60,7 +61,8 @@ public class ProviderConfig {
     @Bean //(initMethod = "start", destroyMethod = "stop")
     @ConditionalOnMissingBean //default zk
     public RegistryCenter providerRegistryCenter() {
-        return new ZkRegistryCenter();
+//        return new ZkRegistryCenter();
+        return new SoRegistryCenter();
     }
 
     @Bean

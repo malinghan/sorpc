@@ -16,7 +16,10 @@ sorpc:
     faultLimit: 10 # 30s 内10次错误则隔离
     halfOpenInitialDelay: 10000
     halfOpenDelay: 60000
-
+#soregistry:
+#  servers: http://localhost:${server.port}/registry
+soregistry:
+  servers: http://localhost:8484
 logging:
   level:
     root: error

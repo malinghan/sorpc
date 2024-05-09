@@ -23,7 +23,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @SpringBootTest(classes = {SorpcDemoConsumerApplication.class})
 //@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT,
-//        properties = {"kkregistry.servers=http://localhost:8894/registry", "kkrpc.app.env=test"})
+//        properties = {"soregistry.servers=http://localhost:8894/registry", "kkrpc.app.env=test"})
 @Slf4j
 class SorpcDemoConsumerApplicationTests {
     static ApplicationContext context1;

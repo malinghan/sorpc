@@ -22,6 +22,7 @@ import com.so.sorpc.core.cluster.RoundRobinLoadBalancer;
 import com.so.sorpc.core.consumer.ConsumerBootStrap;
 import com.so.sorpc.core.filter.ContextParameterFilter;
 import com.so.sorpc.core.meta.InstanceMeta;
+import com.so.sorpc.core.registry.so.SoRegistryCenter;
 import com.so.sorpc.core.registry.zk.ZkRegistryCenter;
 
 import lombok.extern.slf4j.Slf4j;
@@ -82,7 +83,8 @@ public class ConsumerConfig {
     @Bean(initMethod = "start", destroyMethod = "stop")
     @ConditionalOnMissingBean
     public RegistryCenter consumerRegistryCenter() {
-        return new ZkRegistryCenter();
+//        return new ZkRegistryCenter();
+        return new SoRegistryCenter();
     }
 
 //    @Bean

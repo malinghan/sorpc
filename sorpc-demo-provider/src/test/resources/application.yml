@@ -29,7 +29,7 @@ apollo:
     eagerLoad:
       enabled: false
 
-kkregistry:
+soregistry:
   servers: http://localhost:${server.port}/registry
 
 logging:

@@ -23,8 +23,6 @@ public interface RegistryCenter {
 
     void subscribe(ServiceMeta service, ChangedListener listener);
 
-    void unsubscribe(ServiceMeta service, ChangedListener listener);
-
     List<InstanceMeta> fetchAll(ServiceMeta service);
 
     class StaticRegistryCenter implements RegistryCenter {
@@ -57,11 +55,6 @@ public interface RegistryCenter {
 
         @Override
         public void subscribe(ServiceMeta service, ChangedListener listener) {
-
-        }
-
-        @Override
-        public void unsubscribe(ServiceMeta service, ChangedListener listener) {
 
         }
 
